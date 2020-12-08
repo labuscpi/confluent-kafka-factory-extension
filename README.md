@@ -1,1 +1,1 @@
-# confluent-kafka-factory-extension
+# Confluent Kafka Extension: Client Factory
