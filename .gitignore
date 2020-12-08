@@ -1,9 +1,5 @@
 ## ----------------------------------------------------------------------------------------
 ## Custom ignores
-# /tests/Web/Kafka.Api/ssl
-[Ss][Ss][Ll]/
-.config/
-[Kk]ey[Vv]ault.json
 
 # cache/options directory
 .idea/
