@@ -1,4 +1,5 @@
 ﻿using System;
+using Confluent.Kafka.FactoryExtension.Collections;
 using Confluent.Kafka.FactoryExtension.Factories.Common;
 using Confluent.Kafka.FactoryExtension.Handlers;
 using Confluent.Kafka.FactoryExtension.Handlers.Common;
@@ -22,7 +23,7 @@ namespace Confluent.Kafka.FactoryExtension.Factories
 
             SetKeyPrefix(GetType());
 
-            return (IConsumerHandle<TKey, TValue>) ClientCollection.Handles
+            return (IConsumerHandle<TKey, TValue>) ClientCollection.Instance.Handles
                 .GetOrAdd(GetClientHandleKey(name), HandleFactory<TKey, TValue>()).Value;
         }
 

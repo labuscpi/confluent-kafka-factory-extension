@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading;
-using Confluent.Kafka.FactoryExtension.Collections;
 using Confluent.Kafka.FactoryExtension.Handlers.Common;
 using Confluent.Kafka.FactoryExtension.Models.Settings.Clients;
 using Confluent.Kafka.FactoryExtension.Validators;
@@ -12,8 +11,6 @@ namespace Confluent.Kafka.FactoryExtension.Factories.Common
 {
     public abstract class ClientFactory<TSettings>
     {
-        internal static ClientCollection ClientCollection => ClientCollection.Instance;
-
         private const string Separator = "::";
 
         private string _keyPrefix;
