@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
         <PackageId>Confluent.Kafka.FactoryExtension</PackageId>
         <VersionPrefix>1.0.0</VersionPrefix>
         <Authors>labuscpi</Authors>
@@ -9,13 +8,15 @@
         <RepositoryUrl>https://github.com/labuscpi/Confluent.Kafka.FactoryExtension</RepositoryUrl>
         <PackageProjectUrl>https://github.com/users/labuscpi/projects/1</PackageProjectUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <LangVersion>latest</LangVersion>
+        <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="1.5.2" />
+        <PackageReference Include="Confluent.Kafka" Version="1.5.3" />
         <PackageReference Include="FluentValidation" Version="9.3.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
     </ItemGroup>

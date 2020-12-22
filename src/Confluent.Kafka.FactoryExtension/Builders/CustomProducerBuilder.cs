@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Confluent.Kafka.FactoryExtension.Builders
 {
+    [ExcludeFromCodeCoverage]
     public sealed class CustomProducerBuilder<TKey, TValue> : ProducerBuilder<TKey, TValue>
     {
         private IProducer<TKey, TValue> _producer;

@@ -10,11 +10,11 @@ namespace Confluent.Kafka.FactoryExtension.Collections
         public static ClientCollection Instance => LazyInstance.Value;
 
         private static readonly Lazy<ClientCollection> LazyInstance =
-            new Lazy<ClientCollection>(() => new ClientCollection(), LazyThreadSafetyMode.ExecutionAndPublication);
+            new(() => new ClientCollection(), LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public readonly ConcurrentDictionary<string, Lazy<ClientHandle>> ActiveHandlers;
+        public readonly ConcurrentDictionary<string, Lazy<ClientHandle>> Handles;
 
         private ClientCollection()
-            => ActiveHandlers = new ConcurrentDictionary<string, Lazy<ClientHandle>>(StringComparer.Ordinal);
+            => Handles = new ConcurrentDictionary<string, Lazy<ClientHandle>>(StringComparer.Ordinal);
     }
 }

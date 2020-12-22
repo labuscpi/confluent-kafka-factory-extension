@@ -9,28 +9,26 @@ using Microsoft.Extensions.Options;
 
 namespace Confluent.Kafka.FactoryExtension.Factories
 {
-    public sealed class ProducerFactory : ClientFactory, IProducerFactory
+    public sealed class ProducerFactory : ClientFactory<ProducerSettings>, IProducerFactory
     {
-        private readonly IOptionsMonitor<ProducerSettings> _optionsMonitor;
-
-        public ProducerFactory(IOptionsMonitor<ProducerSettings> optionsMonitor)
-            => _optionsMonitor = optionsMonitor;
+        public ProducerFactory(IOptionsMonitor<ProducerSettings> optionsMonitor) : base(optionsMonitor)
+        {
+        }
 
         public IProducerHandle<TKey, TValue> Create<TKey, TValue>(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            SetKeyPrefix(nameof(ProducerHandle<TKey, TValue>));
+            SetKeyPrefix(GetType());
 
-            return (IProducerHandle<TKey, TValue>) ClientCollection.ActiveHandlers.GetOrAdd(GetClientHandleKey(name), ActiveHandleFactory<TKey, TValue>())
+            return (IProducerHandle<TKey, TValue>) ClientCollection
+                .Handles
+                .GetOrAdd(GetClientHandleKey(name), HandleFactory<TKey, TValue>())
                 .Value;
         }
 
         protected override ClientHandle CreateHandle<TKey, TValue>(string name)
             => new ProducerHandle<TKey, TValue>(GetSettings(name));
-
-        private ProducerSettings GetSettings(string name)
-            => _optionsMonitor.Get(name.Replace(KeyPrefix, "", StringComparison.OrdinalIgnoreCase));
     }
 }

@@ -7,6 +7,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E754EBFF-C94
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confluent.Kafka.FactoryExtension", "src\Confluent.Kafka.FactoryExtension\Confluent.Kafka.FactoryExtension.csproj", "{AA492B83-0735-43EB-A81F-C9005165CB4C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E3F12335-8C3C-4284-AC33-0BC6893F8F45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confluent.Kafka.FactoryExtension.Tests", "tests\Confluent.Kafka.FactoryExtension.Tests\Confluent.Kafka.FactoryExtension.Tests.csproj", "{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{F9691896-F4F8-45FB-8F7A-A8199E782D93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumerService.Example", "examples\ConsumerService.Example\ConsumerService.Example.csproj", "{254AB818-340B-4D08-809A-D0D186EDA21A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{EA501C0C-48DE-4B2B-A6C2-129DD5330038}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryExample.Domain", "examples\lib\FactoryExample.Domain\FactoryExample.Domain.csproj", "{83F2CBF7-85EC-497B-9725-FF987313D96D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +29,28 @@ Global
 		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{254AB818-340B-4D08-809A-D0D186EDA21A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{254AB818-340B-4D08-809A-D0D186EDA21A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{254AB818-340B-4D08-809A-D0D186EDA21A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{254AB818-340B-4D08-809A-D0D186EDA21A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83F2CBF7-85EC-497B-9725-FF987313D96D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83F2CBF7-85EC-497B-9725-FF987313D96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83F2CBF7-85EC-497B-9725-FF987313D96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83F2CBF7-85EC-497B-9725-FF987313D96D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AA492B83-0735-43EB-A81F-C9005165CB4C} = {E754EBFF-C94E-4573-917E-C0E91EDDB3E7}
+		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB} = {E3F12335-8C3C-4284-AC33-0BC6893F8F45}
+		{254AB818-340B-4D08-809A-D0D186EDA21A} = {F9691896-F4F8-45FB-8F7A-A8199E782D93}
+		{EA501C0C-48DE-4B2B-A6C2-129DD5330038} = {F9691896-F4F8-45FB-8F7A-A8199E782D93}
+		{83F2CBF7-85EC-497B-9725-FF987313D96D} = {EA501C0C-48DE-4B2B-A6C2-129DD5330038}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF6EEC15-1AA3-4741-BD5C-1D651A23AAF4}

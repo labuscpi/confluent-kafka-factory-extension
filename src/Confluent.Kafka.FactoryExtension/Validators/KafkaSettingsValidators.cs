@@ -27,6 +27,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
     {
         public ClientSettingsValidator()
         {
+            CascadeMode = CascadeMode.Stop;
             RuleForEach(x => x.Consumers).SetValidator(new ConsumersValidator());
             RuleForEach(x => x.Producers).SetValidator(new ProducersValidator());
         }
@@ -36,6 +37,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
     {
         public ConsumersValidator()
         {
+            CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Key).NotEmpty();
             RuleFor(x => x.Value).SetValidator(new ConsumerSettingsValidator());
         }
@@ -45,9 +47,11 @@ namespace Confluent.Kafka.FactoryExtension.Validators
     {
         public ConsumerSettingsValidator()
         {
+            CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Topic).NotEmpty();
             RuleFor(x => x.Config).NotEmpty();
-            RuleFor(x => x.Config.BootstrapServers).NotEmpty();
+            When(x => x.Config != null, 
+                () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
         }
     }
 
@@ -55,6 +59,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
     {
         public ProducersValidator()
         {
+            CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Key).NotEmpty();
             RuleFor(x => x.Value).SetValidator(new ProducerSettingsValidator());
         }
@@ -64,9 +69,11 @@ namespace Confluent.Kafka.FactoryExtension.Validators
     {
         public ProducerSettingsValidator()
         {
+            CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Topic).NotEmpty();
             RuleFor(x => x.Config).NotEmpty();
-            RuleFor(x => x.Config.BootstrapServers).NotEmpty();
+            When(x => x.Config != null, 
+                () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
         }
     }
 }

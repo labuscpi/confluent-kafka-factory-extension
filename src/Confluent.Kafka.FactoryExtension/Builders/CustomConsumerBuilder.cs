@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Confluent.Kafka.FactoryExtension.Builders
 {
+    [ExcludeFromCodeCoverage]
     public sealed class CustomConsumerBuilder<TKey, TValue> : ConsumerBuilder<TKey, TValue>
     {
         private IConsumer<TKey, TValue> _consumer;

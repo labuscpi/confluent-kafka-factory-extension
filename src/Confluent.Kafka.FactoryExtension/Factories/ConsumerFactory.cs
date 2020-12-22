@@ -9,28 +9,24 @@ using Microsoft.Extensions.Options;
 
 namespace Confluent.Kafka.FactoryExtension.Factories
 {
-    public sealed class ConsumerFactory : ClientFactory, IConsumerFactory
+    public sealed class ConsumerFactory : ClientFactory<ConsumerSettings>, IConsumerFactory
     {
-        private readonly IOptionsMonitor<ConsumerSettings> _optionsMonitor;
-
-        public ConsumerFactory(IOptionsMonitor<ConsumerSettings> optionsMonitor)
-            => _optionsMonitor = optionsMonitor;
+        public ConsumerFactory(IOptionsMonitor<ConsumerSettings> optionsMonitor) : base(optionsMonitor)
+        {
+        }
 
         public IConsumerHandle<TKey, TValue> Create<TKey, TValue>(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentNullException(nameof(name));
 
-            SetKeyPrefix(nameof(ConsumerHandle<TKey, TValue>));
+            SetKeyPrefix(GetType());
 
-            return (IConsumerHandle<TKey, TValue>) ClientCollection.ActiveHandlers
-                .GetOrAdd(GetClientHandleKey(name), ActiveHandleFactory<TKey, TValue>()).Value;
+            return (IConsumerHandle<TKey, TValue>) ClientCollection.Handles
+                .GetOrAdd(GetClientHandleKey(name), HandleFactory<TKey, TValue>()).Value;
         }
 
         protected override ClientHandle CreateHandle<TKey, TValue>(string name)
             => new ConsumerHandle<TKey, TValue>(GetSettings(name));
-
-        private ConsumerSettings GetSettings(string name)
-            => _optionsMonitor.Get(name.Replace(KeyPrefix, "", StringComparison.OrdinalIgnoreCase));
     }
 }
