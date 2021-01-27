@@ -15,8 +15,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - name: Build
-      run: dotnet build Confluent.Kafka.FactoryExtension.csproj -c Release -v n /p:Version=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/tags/${{ github.event.release.tag_name }}"
+    - name: Pack
+      run: dotnet pack Confluent.Kafka.FactoryExtension.csproj -c Release -v n /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/tags/${{ github.event.release.tag_name }}"
       working-directory: src/Confluent.Kafka.FactoryExtension
     - name: Publish Package to nuget.org
       run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGETAPIKEY }} --source https://api.nuget.org/v3/index.json --no-symbols true
