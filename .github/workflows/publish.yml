@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - env:                  
+            workspace_path: ${{GITHUB_WORKSPACE}}
     - uses: actions/checkout@v2
     - name: echo-default-env-variables
       run: |
@@ -22,6 +24,7 @@ jobs:
           echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
           echo "GITHUB_SHA: ${GITHUB_SHA}"
           echo "GITHUB_REF: ${GITHUB_REF}"
+          echo "workspace_path: ${workspace_path}"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
