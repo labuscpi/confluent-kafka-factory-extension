@@ -3,15 +3,14 @@ name: Publish to NuGet & GitHub
 on:  
   release:
     types: [published]
+
 env:                  
     workspace_path: ${{GITHUB_WORKSPACE}}
     project_path: "${{GITHUB_WORKSPACE}}/src/Confluent.Kafka.FactoryExtension/Confluent.Kafka.FactoryExtension.csproj"
     
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:    
     - uses: actions/checkout@v2
     - name: echo-default-env-variables
