@@ -1,6 +1,6 @@
 ﻿#region Copyright
 
-// Copyright 2020. labuscpi
+// Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
             CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Topic).NotEmpty();
             RuleFor(x => x.Config).NotEmpty();
-            When(x => x.Config != null, 
+            When(x => x.Config != null,
                 () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
         }
     }
@@ -72,7 +72,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
             CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Topic).NotEmpty();
             RuleFor(x => x.Config).NotEmpty();
-            When(x => x.Config != null, 
+            When(x => x.Config != null,
                 () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
         }
     }
