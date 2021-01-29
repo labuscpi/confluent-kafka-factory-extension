@@ -5,17 +5,17 @@ An extension of [Confluent's .NET Client for Apache Kafka<sup>TM</sup>](https://
 
 * Package Manager
 ```
-Install-Package Confluent.Kafka.FactoryExtension -Version 1.0.1
+Install-Package Confluent.Kafka.FactoryExtension -Version 1.0.2
 ```
 
 * .NET CLI
 ```
-dotnet add package Confluent.Kafka.FactoryExtension --version 1.0.1
+dotnet add package Confluent.Kafka.FactoryExtension --version 1.0.2
 ```
 
 * PackageReference
 ```
-<PackageReference Include="Confluent.Kafka.FactoryExtension" Version="1.0.1" />
+<PackageReference Include="Confluent.Kafka.FactoryExtension" Version="1.0.2" />
 ```
 
 ### Features
