@@ -1,0 +1,39 @@
+{
+  "KafkaSettings": {
+    "Consumers": {
+      "Constellation": {
+        "Topic": "lab-01-ehub;lab-02-ehub",
+        "Separator": ";",
+        "Config": {
+          "BootstrapServers": "lab-01-ehubns.servicebus.windows.net:9093",
+          "ClientId": null,
+          "Debug": null,
+          "SaslMechanism": "Plain",
+          "SaslUsername": "$ConnectionString",
+          "SecurityProtocol": "SaslSsl",
+          "SocketKeepaliveEnable": true,
+          "SaslPassword": "Endpoint=sb://lab-01-ehubns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=qVCcb+GHrz3hNB2V29CAXX1ziaR/Nd5uPENr0tn5TpQ=",
+          "GroupId": "constellation",
+          "AutoOffsetReset": "Latest",
+          "BrokerVersionFallback": "1.0.0"
+        }
+      },
+      "Qualification": {
+        "Topic": "lab-01-ehub",
+        "Config": {
+          "BootstrapServers": "lab-01-ehubns.servicebus.windows.net:9093",
+          "ClientId": null,
+          "Debug": null,
+          "SaslMechanism": "Plain",
+          "SaslUsername": "$ConnectionString",
+          "SecurityProtocol": "SaslSsl",
+          "SocketKeepaliveEnable": true,
+          "SaslPassword": "Endpoint=sb://lab-01-ehubns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=qVCcb+GHrz3hNB2V29CAXX1ziaR/Nd5uPENr0tn5TpQ=",
+          "GroupId": "qualification",
+          "AutoOffsetReset": "Latest",
+          "BrokerVersionFallback": "1.0.0"
+        }
+      }
+    }
+  }
+}
