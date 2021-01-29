@@ -1,4 +1,5 @@
 ﻿#region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System;
@@ -26,7 +28,7 @@ namespace Confluent.Kafka.FactoryExtension.Interfaces.Handlers
     {
         CustomProducerBuilder<TKey, TValue> Builder { get; }
         IProducer<TKey, TValue> Producer { get; }
-        
+
         Message<TKey, TValue> CreateMessage(TKey key, TValue value, Headers headers = null);
         void Produce(Message<TKey, TValue> message, Action<DeliveryReport<TKey, TValue>> deliveryHandler = null);
         void Produce(Partition partition, Message<TKey, TValue> message, Action<DeliveryReport<TKey, TValue>> deliveryHandler = null);

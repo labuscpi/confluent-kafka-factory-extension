@@ -1,4 +1,5 @@
 ﻿#region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System.Collections.Generic;
@@ -48,7 +50,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
             CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Topic).NotEmpty();
             RuleFor(x => x.Config).NotEmpty();
-            When(x => x.Config != null, 
+            When(x => x.Config != null,
                 () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
         }
     }
@@ -70,7 +72,7 @@ namespace Confluent.Kafka.FactoryExtension.Validators
             CascadeMode = CascadeMode.Stop;
             RuleFor(x => x.Topic).NotEmpty();
             RuleFor(x => x.Config).NotEmpty();
-            When(x => x.Config != null, 
+            When(x => x.Config != null,
                 () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
         }
     }

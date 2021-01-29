@@ -1,4 +1,5 @@
 ﻿#region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +13,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System;
 using System.Threading;
 using Confluent.Kafka.FactoryExtension.Builders;
+using Confluent.Kafka.FactoryExtension.Interfaces.Handlers.Common;
 
 namespace Confluent.Kafka.FactoryExtension.Interfaces.Handlers
 {
-    public interface IConsumerHandle<TKey, TValue>
+    public interface IConsumerHandle<TKey, TValue> : IClientHandle
     {
+        string Separator { get;  }
         CustomConsumerBuilder<TKey, TValue> Builder { get; }
         IConsumer<TKey, TValue> Consumer { get; }
-        
+
         ConsumeResult<TKey, TValue> Consume(int millisecondsTimeout);
         ConsumeResult<TKey, TValue> Consume(CancellationToken cancellationToken = default);
         ConsumeResult<TKey, TValue> Consume(TimeSpan timeout);

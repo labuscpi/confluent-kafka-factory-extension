@@ -77,20 +77,24 @@ namespace ConsumerService.Example.Services
 
         private IConsumerHandle<TKey, TValue> GetHandle<TKey, TValue>()
         {
-            // Create handle on name registered in Configuration. Case sensitive!!
+            // Create handle on name registered in Configuration, case sensitive
             var handle = _factory.Create<TKey, TValue>(nameof(Constellation));
 
-            // Optional builder customization
-            // handle.Builder
-            //     .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
-            //     .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); })
-            //     .SetStatisticsHandler((_, s) => { })
-            //     .SetOffsetsCommittedHandler((_, offsets) => { })
-            //     .SetPartitionsAssignedHandler((_, list) => { })
-            //     .SetPartitionsRevokedHandler((_, list) => { })
-            //     .SetOAuthBearerTokenRefreshHandler((_, s) => { })
-            //     .SetKeyDeserializer()
-            //     .SetValueDeserializer();
+            // Optional Handler Action Setup
+            handle.Builder
+                .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
+                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); });
+                
+            // Available Handler
+            // SetStatisticsHandler()
+            // SetOffsetsCommittedHandler()
+            // SetPartitionsAssignedHandler()
+            // SetPartitionsRevokedHandler()
+            // SetOAuthBearerTokenRefreshHandler()
+            
+            // Available Key and Value Deserializer Setup
+            // SetKeyDeserializer()
+            // SetValueDeserializer()
 
             return handle;
         }

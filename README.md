@@ -20,16 +20,13 @@ dotnet add package Confluent.Kafka.FactoryExtension --version 1.0.1
 
 ### Features
 * Configure multiple Named Kafka Clients using `Microsoft.Extensions.Configuration.IConfiguration`.
-* Register Kafka Clients in a thread safe Concurrent Dictionary
+* Register Kafka Clients in a thread safe Concurrent Dictionary.
 * Inject IConsumerFactory and IProducerFactory using `Microsoft.Extensions.DependencyInjection`.
 
 ## Usage
 
-Add a global Kafka client:
-
 Take a look in the [examples](examples) directory for example usage.
 
-Microsoft Azure Eventhub example:
 ```json
 {
   "KafkaSettings": {
@@ -77,15 +74,107 @@ Microsoft Azure Eventhub example:
 > Here's an example configuration: 
 > "SaslPassword" : "Endpoint=sb://mynamespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=XXXXXXXXXXXXXXXX";
 
+#### DI Configuration
+Add the Config File to *configApp* with `configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);`, 
+get configuration section `var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));`
+and register the client factories in DI with `services.TryAddKafkaFactories(configuration);`
 ```c#
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((_, configApp) =>
+                {
+                    var keyVaultUrl = configApp.Build().GetValue<string>("KeyVault");
+                    if (!string.IsNullOrWhiteSpace(keyVaultUrl))
+                        configApp.AddAzureKeyVault(keyVaultUrl);
+
+                    configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var settings = hostContext.Configuration.GetSection(nameof(KafkaSettings)).Get<KafkaSettings>();
-                    services.TryAddKafkaFactories(settings);
+                    var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));
+                    services.TryAddKafkaFactories(configuration);
 
                     services.AddHostedService<Constellation>();
                     services.AddHostedService<Qualification>();
                 });
+```
+---
+* Microsoft Azure Eventhub Consumer example: (`ConsumerService.Example` is example projects)
+
+#### Constructor Injection in `IHostedService`
+```c#
+        public Constellation(IConsumerFactory factory, ILogger<Constellation> logger)
+        {
+            _factory = factory;
+            _logger = logger;
+        }
+```
+
+Construct the `ICosumerHandle<TKey, TValue>` from the factory `var handle = _factory.Create<TKey, TValue>(nameof(Constellation));`
+
+```c#
+        private IConsumerHandle<TKey, TValue> GetHandle<TKey, TValue>()
+        {
+            // Create handle on name registered in Configuration, case sensitive
+            var handle = _factory.Create<TKey, TValue>(nameof(Constellation));
+
+            // Optional Handler Action Setup
+            handle.Builder
+                .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
+                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); });
+                
+            // Available Handler
+            // SetStatisticsHandler()
+            // SetOffsetsCommittedHandler()
+            // SetPartitionsAssignedHandler()
+            // SetPartitionsRevokedHandler()
+            // SetOAuthBearerTokenRefreshHandler()
+            
+            // Available Key and Value Deserializer Setup
+            // SetKeyDeserializer()
+            // SetValueDeserializer()
+
+            return handle;
+        }
+```
+> **_Note:_** A `CustomConsumerBuilder` object is instantiated. Both Handler Actions
+> and Key/Value Deserializer Setup is available. 
+
+```c#
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            new Thread(() => StartConsumerLoop<string, string>(stoppingToken)).Start();
+
+            return Task.CompletedTask;
+        }
+
+        private void StartConsumerLoop<TKey, TValue>(CancellationToken cancellationToken)
+        {
+            var handle = GetHandle<TKey, TValue>();
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    var cr = handle.Consume(cancellationToken);
+                    Log(LogLevel.Information, "{0}: {1}", cr.Message.Key, cr.Message.Value);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch (ConsumeException e)
+                {
+                    Log(LogLevel.Error, "Consume error: {0}", e.Error.Reason);
+
+                    if (e.Error.IsFatal)
+                        break;
+                }
+                catch (Exception e)
+                {
+                    Log(LogLevel.Error, "Unexpected error: {0}", e.Message);
+                    break;
+                }
+            }
+        }
 ```

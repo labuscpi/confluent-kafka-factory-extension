@@ -12,7 +12,7 @@
           "SaslUsername": "$ConnectionString",
           "SecurityProtocol": "SaslSsl",
           "SocketKeepaliveEnable": true,
-          "SaslPassword": "Endpoint=sb://lab-01-ehubns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=qVCcb+GHrz3hNB2V29CAXX1ziaR/Nd5uPENr0tn5TpQ=",
+          "SaslPassword": "Endpoint=sb://lab-01-ehubns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=",
           "GroupId": "constellation",
           "AutoOffsetReset": "Latest",
           "BrokerVersionFallback": "1.0.0"
@@ -28,7 +28,7 @@
           "SaslUsername": "$ConnectionString",
           "SecurityProtocol": "SaslSsl",
           "SocketKeepaliveEnable": true,
-          "SaslPassword": "Endpoint=sb://lab-01-ehubns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=qVCcb+GHrz3hNB2V29CAXX1ziaR/Nd5uPENr0tn5TpQ=",
+          "SaslPassword": "Endpoint=sb://lab-01-ehubns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=",
           "GroupId": "qualification",
           "AutoOffsetReset": "Latest",
           "BrokerVersionFallback": "1.0.0"

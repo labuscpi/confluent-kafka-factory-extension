@@ -1,4 +1,5 @@
 ﻿#region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System.Collections.Generic;
-using System.Net;
 using Confluent.Kafka.FactoryExtension.Factories;
 using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
 using Confluent.Kafka.FactoryExtension.Models.Settings.Clients;
@@ -31,19 +32,13 @@ namespace Confluent.Kafka.FactoryExtension.Extensions
             if (collection == null)
                 return;
 
-            foreach (var (key, value) in collection)
+            foreach (var (key, consumerSettings) in collection)
             {
-                services.AddOptions<ConsumerSettings>(key).Configure(settings =>
+                services.AddOptions<ConsumerSettings>(key).Configure(cs =>
                 {
-                    settings.Topic = value.Topic;
-                    settings.Separator = value.Separator;
-                    settings.Config = value.Config;
-                });
-
-                services.PostConfigure<ConsumerSettings>(key, settings =>
-                {
-                    if (string.IsNullOrEmpty(settings.Config.ClientId))
-                        settings.Config.ClientId = Dns.GetHostName();
+                    cs.Topic = consumerSettings.Topic;
+                    cs.Separator = consumerSettings.Separator;
+                    cs.Config = consumerSettings.Config;
                 });
             }
 
@@ -55,18 +50,12 @@ namespace Confluent.Kafka.FactoryExtension.Extensions
             if (collection == null)
                 return;
 
-            foreach (var (key, value) in collection)
+            foreach (var (key, producerSettings) in collection)
             {
-                services.AddOptions<ProducerSettings>(key).Configure(settings =>
+                services.AddOptions<ProducerSettings>(key).Configure(ps =>
                 {
-                    settings.Topic = value.Topic;
-                    settings.Config = value.Config;
-                });
-
-                services.PostConfigure<ProducerSettings>(key, settings =>
-                {
-                    if (string.IsNullOrEmpty(settings.Config.ClientId))
-                        settings.Config.ClientId = Dns.GetHostName();
+                    ps.Topic = producerSettings.Topic;
+                    ps.Config = producerSettings.Config;
                 });
             }
 

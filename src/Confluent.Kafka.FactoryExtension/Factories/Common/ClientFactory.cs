@@ -1,4 +1,5 @@
 ﻿#region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System;
@@ -44,9 +46,9 @@ namespace Confluent.Kafka.FactoryExtension.Factories.Common
         {
             if (!string.IsNullOrWhiteSpace(_keyPrefix))
                 return;
-            
+
             var identifier = Guid.NewGuid().ToString("N");
-            
+
             _keyPrefix = new StringBuilder(type.Name).Append(Separator).Append(identifier).Append(Separator).ToString();
         }
 

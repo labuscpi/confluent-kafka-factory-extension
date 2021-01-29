@@ -32,7 +32,7 @@ namespace ConsumerService.Example
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((host, configApp) =>
+                .ConfigureAppConfiguration((_, configApp) =>
                 {
                     var keyVaultUrl = configApp.Build().GetValue<string>("KeyVault");
                     if (!string.IsNullOrWhiteSpace(keyVaultUrl))
@@ -46,7 +46,7 @@ namespace ConsumerService.Example
                     services.TryAddKafkaFactories(configuration);
 
                     services.AddHostedService<Constellation>();
-                    // services.AddHostedService<Qualification>();
+                    services.AddHostedService<Qualification>();
                 });
     }
 }

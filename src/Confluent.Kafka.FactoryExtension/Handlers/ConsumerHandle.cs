@@ -1,4 +1,5 @@
 ﻿#region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System;
@@ -29,10 +31,10 @@ namespace Confluent.Kafka.FactoryExtension.Handlers
 {
     internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHandle<TKey, TValue>, IDisposable
     {
+        [ExcludeFromCodeCoverage] public string Separator { get; }
         [ExcludeFromCodeCoverage] public CustomConsumerBuilder<TKey, TValue> Builder { get; }
         [ExcludeFromCodeCoverage] public IConsumer<TKey, TValue> Consumer => Builder.Build();
 
-        private readonly string _separator;
         private readonly StringComparer _stringComparer = StringComparer.Ordinal;
 
         public ConsumerHandle(ConsumerSettings settings)
@@ -41,7 +43,7 @@ namespace Confluent.Kafka.FactoryExtension.Handlers
                 throw new ArgumentNullException(nameof(settings));
 
             Topic = settings.Topic;
-            _separator = settings.Separator;
+            Separator = settings.Separator;
 
             var config = new ConsumerConfig();
             foreach (var (key, value) in settings.Config.Where(x => !string.IsNullOrEmpty(x.Value)))
@@ -65,39 +67,42 @@ namespace Confluent.Kafka.FactoryExtension.Handlers
         [ExcludeFromCodeCoverage]
         private ConsumerHandle<TKey, TValue> Subscribe()
         {
-            var topicList = new List<string>();
-            if (string.IsNullOrWhiteSpace(_separator))
-                topicList.Add(Topic);
-            else
-                topicList.AddRange(Topic.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Distinct(_stringComparer));
+            var subscription = CreateSubscription();
 
-            CheckIfSubscribed(topicList);
+            var consumerSubscription = Consumer.Subscription;
+            if (consumerSubscription == null || !consumerSubscription.Any())
+            {
+                Consumer.Subscribe(subscription);
+                return this;
+            }
+
+            consumerSubscription.Sort(_stringComparer);
+
+            if (subscription.SequenceEqual(consumerSubscription))
+                return this;
+
+            Consumer.Unsubscribe();
+            Consumer.Subscribe(subscription);
 
             return this;
         }
 
         [ExcludeFromCodeCoverage]
-        private void CheckIfSubscribed(List<string> topicList)
+        private List<string> CreateSubscription()
         {
-            if (topicList == null || !topicList.Any())
-                throw new ArgumentNullException(nameof(topicList));
-            
-            topicList.Sort(_stringComparer);
-            
-            var consumerSubscription = Consumer.Subscription;
-            if (consumerSubscription == null || !consumerSubscription.Any())
-            {
-                Consumer.Subscribe(topicList);
-                return;
-            }
-            
-            consumerSubscription.Sort(_stringComparer);
+            var subscriptions = string.IsNullOrWhiteSpace(Separator)
+                ? new List<string> {Topic}
+                : Topic
+                    .Split(Separator, StringSplitOptions.RemoveEmptyEntries)
+                    .Distinct(_stringComparer)
+                    .ToList();
 
-            if (topicList.SequenceEqual(consumerSubscription))
-                return;
-            
-            Consumer.Unsubscribe();
-            Consumer.Subscribe(topicList);
+            if (subscriptions == null || !subscriptions.Any())
+                throw new ArgumentNullException(nameof(Topic));
+
+            subscriptions.Sort(_stringComparer);
+
+            return subscriptions;
         }
 
         [ExcludeFromCodeCoverage]

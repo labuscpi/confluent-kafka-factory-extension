@@ -1,4 +1,5 @@
 #region Copyright
+
 // Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,9 +13,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -27,31 +31,33 @@ namespace ConsumerService.Example.Services
 {
     public class Qualification : BackgroundService
     {
-        private readonly IConsumerFactory _factory;
+        private readonly IConsumerHandle<string, string> _handle;
         private readonly ILogger<Qualification> _logger;
 
         public Qualification(IConsumerFactory factory, ILogger<Qualification> logger)
         {
-            _factory = factory;
+            _handle = factory.Create<string, string>(nameof(Qualification));
             _logger = logger;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            new Thread(() => StartConsumerLoop<string, string>(stoppingToken)).Start();
+            new Thread(() => StartConsumerLoop(stoppingToken)).Start();
 
             return Task.CompletedTask;
         }
 
-        private void StartConsumerLoop<TKey, TValue>(CancellationToken cancellationToken)
+        private void StartConsumerLoop(CancellationToken cancellationToken)
         {
-            var handle = GetHandle<TKey, TValue>();
+            var consumer = BuildConsumer();
+
+            consumer.Subscribe(Topics());
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var cr = handle.Consume(cancellationToken);
+                    var cr = consumer.Consume(cancellationToken);
                     Log(LogLevel.Information, "{0}: {1}", cr.Message.Key, cr.Message.Value);
                 }
                 catch (OperationCanceledException)
@@ -73,24 +79,20 @@ namespace ConsumerService.Example.Services
             }
         }
 
-        private IConsumerHandle<TKey, TValue> GetHandle<TKey, TValue>()
-        {
-            var handle = _factory.Create<TKey, TValue>(nameof(Qualification));
+        private IEnumerable<string> Topics()
+            => string.IsNullOrWhiteSpace(_handle.Separator)
+                ? new List<string> {_handle.Topic}
+                : _handle.Topic
+                    .Split(_handle.Separator, StringSplitOptions.RemoveEmptyEntries)
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList();
 
-            //Optional builder customization
-            handle.Builder
-                .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason);})
-                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message);});
-            // .SetStatisticsHandler((_, s) => { })
-            // .SetOffsetsCommittedHandler((_, offsets) => { })
-            // .SetPartitionsAssignedHandler((_, list) => { })
-            // .SetPartitionsRevokedHandler((_, list) => { })
-            // .SetOAuthBearerTokenRefreshHandler((_, s) => { })
-            // .SetKeyDeserializer()
-            // .SetValueDeserializer();
-
-            return handle;
-        }
+        // Optional builder customization
+        private IConsumer<string, string> BuildConsumer()
+            => _handle.Builder
+                .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
+                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); })
+                .Build();
 
         private void Log(LogLevel logLevel, string format, params object[] args)
             => _logger.Log(logLevel, format, args);
