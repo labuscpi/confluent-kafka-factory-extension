@@ -18,7 +18,7 @@
 
 using Confluent.Kafka.FactoryExtension.Extensions;
 using Confluent.Kafka.FactoryExtension.Models;
-using ConsumerService.Example.Services;
+using FactoryExtension.Services.Example.Consumers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,11 +34,8 @@ namespace ConsumerService.Example
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((_, configApp) =>
                 {
-                    var keyVaultUrl = configApp.Build().GetValue<string>("KeyVault");
-                    if (!string.IsNullOrWhiteSpace(keyVaultUrl))
-                        configApp.AddAzureKeyVault(keyVaultUrl);
-
                     configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);
+                    configApp.AddJsonFile("Secrets.json", true, false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -46,7 +43,7 @@ namespace ConsumerService.Example
                     services.TryAddKafkaFactories(configuration);
 
                     services.AddHostedService<Constellation>();
-                    services.AddHostedService<Qualification>();
+                    // services.AddHostedService<Qualification>();
                 });
     }
 }

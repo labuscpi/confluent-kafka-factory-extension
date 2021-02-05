@@ -22,84 +22,109 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
 using Confluent.Kafka.FactoryExtension.Interfaces.Handlers;
+using FactoryExtension.Example.Abstractions.Extensions;
+using FactoryExtension.Services.Example.Collections;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ConsumerService.Example.Services
+namespace FactoryExtension.Services.Example.Producers
 {
-    public class Constellation : BackgroundService
+    public class Contradiction : BackgroundService
     {
-        private readonly IConsumerFactory _factory;
-        private readonly ILogger<Constellation> _logger;
+        private readonly IProducerFactory _factory;
+        private readonly ProducerMessageCollection _collection;
+        private readonly ILogger<Contradiction> _logger;
 
-        public Constellation(IConsumerFactory factory, ILogger<Constellation> logger)
+        public Contradiction(IProducerFactory factory, ProducerMessageCollection collection, ILogger<Contradiction> logger)
         {
             _factory = factory;
+            _collection = collection;
             _logger = logger;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            new Thread(() => StartConsumerLoop<string, string>(stoppingToken)).Start();
+            new Thread(() => StartProducerLoop(stoppingToken)).Start();
 
             return Task.CompletedTask;
         }
 
-        private void StartConsumerLoop<TKey, TValue>(CancellationToken cancellationToken)
+        private void StartProducerLoop(CancellationToken cancellationToken)
         {
-            var handle = GetHandle<TKey, TValue>();
+            var handle = GetHandle();
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var cr = handle.Consume(cancellationToken);
-                    Log(LogLevel.Information, "{0}: {1}", cr.Message.Key, cr.Message.Value);
+                    var key = TryGetMessage(out var message);
+                    if (string.IsNullOrWhiteSpace(key))
+                        continue;
+
+                    handle.Produce(message, report => { _collection.ReportCollection.TryAdd(key, report); });
                 }
                 catch (OperationCanceledException)
                 {
                     break;
                 }
-                catch (ConsumeException e)
+                catch (ProduceException<Null, string> e)
                 {
-                    Log(LogLevel.Error, "Consume error: {0}", e.Error.Reason);
+                    _logger.LogError(e, "Produce error: {0}", e.Error.Reason);
 
                     if (e.Error.IsFatal)
                         break;
                 }
                 catch (Exception e)
                 {
-                    Log(LogLevel.Error, "Unexpected error: {0}", e.Message);
+                    _logger.LogError(e, "Unexpected error: {0}", e.Message);
                     break;
                 }
             }
         }
 
-        private IConsumerHandle<TKey, TValue> GetHandle<TKey, TValue>()
+        private string TryGetMessage(out Message<Null, string> message)
+        {
+            message = null;
+        
+            if (_collection.Queue.IsEmpty)
+                return null;
+            
+            if (!_collection.Queue.TryDequeue(out var key))
+                return null;
+            
+            if (!_collection.MessageCollection.TryRemove(key, out var value))
+                return null;
+        
+            message = new Message<Null, string>
+            {
+                Value = value.SerializeObject()
+            };
+        
+            return key;
+        }
+
+        private IProducerHandle<Null, string> GetHandle()
         {
             // Create handle on name registered in Configuration, case sensitive
-            var handle = _factory.Create<TKey, TValue>(nameof(Constellation));
+            var handle = _factory.Create<Null, string>(nameof(Contradiction));
 
             // Optional Handler Action Setup
             handle.Builder
-                .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
-                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); });
-                
+                .SetErrorHandler((_, error) => { _logger.LogError(error.Reason); })
+                .SetLogHandler((_, message) => { _logger.LogInformation(message.Message); });
+
             // Available Handler
             // SetStatisticsHandler()
             // SetOffsetsCommittedHandler()
             // SetPartitionsAssignedHandler()
             // SetPartitionsRevokedHandler()
             // SetOAuthBearerTokenRefreshHandler()
-            
+
             // Available Key and Value Deserializer Setup
             // SetKeyDeserializer()
             // SetValueDeserializer()
 
             return handle;
         }
-
-        private void Log(LogLevel logLevel, string format, params object[] args)
-            => _logger.Log(logLevel, format, args);
     }
 }
