@@ -17,8 +17,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
@@ -27,37 +25,35 @@ using Confluent.Kafka.FactoryExtension.Interfaces.Handlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace ConsumerService.Example.Services
+namespace FactoryExtension.Services.Example.Consumers
 {
-    public class Qualification : BackgroundService
+    public class Constellation : BackgroundService
     {
-        private readonly IConsumerHandle<string, string> _handle;
-        private readonly ILogger<Qualification> _logger;
+        private readonly IConsumerFactory _factory;
+        private readonly ILogger<Constellation> _logger;
 
-        public Qualification(IConsumerFactory factory, ILogger<Qualification> logger)
+        public Constellation(IConsumerFactory factory, ILogger<Constellation> logger)
         {
-            _handle = factory.Create<string, string>(nameof(Qualification));
+            _factory = factory;
             _logger = logger;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            new Thread(() => StartConsumerLoop(stoppingToken)).Start();
+            new Thread(() => StartConsumerLoop<string, string>(stoppingToken)).Start();
 
             return Task.CompletedTask;
         }
 
-        private void StartConsumerLoop(CancellationToken cancellationToken)
+        private void StartConsumerLoop<TKey, TValue>(CancellationToken cancellationToken)
         {
-            var consumer = BuildConsumer();
-
-            consumer.Subscribe(Topics());
+            var handle = GetHandle<TKey, TValue>();
 
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var cr = consumer.Consume(cancellationToken);
+                    var cr = handle.Consume(cancellationToken);
                     Log(LogLevel.Information, "{0}: {1}", cr.Message.Key, cr.Message.Value);
                 }
                 catch (OperationCanceledException)
@@ -79,20 +75,29 @@ namespace ConsumerService.Example.Services
             }
         }
 
-        private IEnumerable<string> Topics()
-            => string.IsNullOrWhiteSpace(_handle.Separator)
-                ? new List<string> {_handle.Topic}
-                : _handle.Topic
-                    .Split(_handle.Separator, StringSplitOptions.RemoveEmptyEntries)
-                    .Distinct(StringComparer.Ordinal)
-                    .ToList();
+        private IConsumerHandle<TKey, TValue> GetHandle<TKey, TValue>()
+        {
+            // Create handle on name registered in Configuration, case sensitive
+            var handle = _factory.Create<TKey, TValue>(nameof(Constellation));
 
-        // Optional builder customization
-        private IConsumer<string, string> BuildConsumer()
-            => _handle.Builder
+            // Optional Handler Action Setup
+            handle.Builder
                 .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
-                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); })
-                .Build();
+                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); });
+                
+            // Available Handler
+            // SetStatisticsHandler()
+            // SetOffsetsCommittedHandler()
+            // SetPartitionsAssignedHandler()
+            // SetPartitionsRevokedHandler()
+            // SetOAuthBearerTokenRefreshHandler()
+            
+            // Available Key and Value Deserializer Setup
+            // SetKeyDeserializer()
+            // SetValueDeserializer()
+
+            return handle;
+        }
 
         private void Log(LogLevel logLevel, string format, params object[] args)
             => _logger.Log(logLevel, format, args);

@@ -1,5 +1,8 @@
 ## ----------------------------------------------------------------------------------------
 ## Custom ignores
+.config/
+[Kk]ey[Vv]ault.json
+[Ss]ecrets.json
 
 # cache/options directory
 .idea/
