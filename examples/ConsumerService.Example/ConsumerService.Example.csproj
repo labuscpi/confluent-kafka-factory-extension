@@ -19,10 +19,6 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <Content Include=".config\secrets.json" />
-      <None Include=".config\settings.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </None>
     </ItemGroup>
 
     <ItemGroup>

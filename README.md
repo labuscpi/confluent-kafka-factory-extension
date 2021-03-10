@@ -5,17 +5,17 @@ An extension of [Confluent's .NET Client for Apache Kafka<sup>TM</sup>](https://
 
 * Package Manager
 ```
-Install-Package Confluent.Kafka.FactoryExtension -Version 1.0.2
+Install-Package Confluent.Kafka.FactoryExtension -Version 1.0.3
 ```
 
 * .NET CLI
 ```
-dotnet add package Confluent.Kafka.FactoryExtension --version 1.0.2
+dotnet add package Confluent.Kafka.FactoryExtension --version 1.0.3
 ```
 
 * PackageReference
 ```
-<PackageReference Include="Confluent.Kafka.FactoryExtension" Version="1.0.2" />
+<PackageReference Include="Confluent.Kafka.FactoryExtension" Version="1.0.3" />
 ```
 
 ### Features
@@ -75,19 +75,19 @@ Take a look in the [examples](examples) directory for example usage.
 > "SaslPassword" : "Endpoint=sb://mynamespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=XXXXXXXXXXXXXXXX";
 
 #### DI Configuration
-Add the Config File to *configApp* with `configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);`, 
+Add all .json settings files to *IConfigurationBuilder*, 
 get configuration section `var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));`
 and register the client factories in DI with `services.TryAddKafkaFactories(configuration);`
 ```c#
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((_, configApp) =>
+                .ConfigureAppConfiguration((context, builder) =>
                 {
-                    var keyVaultUrl = configApp.Build().GetValue<string>("KeyVault");
-                    if (!string.IsNullOrWhiteSpace(keyVaultUrl))
-                        configApp.AddAzureKeyVault(keyVaultUrl);
-
-                    configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);
+                    var configuration = builder.Build();
+                    var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
+                    var directoryContents = context.HostingEnvironment.ContentRootFileProvider.GetDirectoryContents(configSubPath);
+                    foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
+                        builder.AddJsonFile(file.PhysicalPath, true, false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
