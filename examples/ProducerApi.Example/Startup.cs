@@ -22,8 +22,8 @@ namespace ProducerApi.Example
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var configuration = Configuration.GetSection(nameof(KafkaSettings));
-            services.TryAddKafkaFactories(configuration);
+            var kafkaSettings = Configuration.GetSection(nameof(KafkaSettings)).Get<KafkaSettings>();
+            services.TryAddKafkaFactories(kafkaSettings);
             services.TryAddSingleton(new ProducerMessageCollection());
             services.AddHostedService<Contradiction>();
 

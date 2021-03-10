@@ -12,8 +12,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="1.5.3" />
-        <PackageReference Include="FluentValidation" Version="9.4.0" />
+        <PackageReference Include="Confluent.Kafka" Version="1.6.2" />
+        <PackageReference Include="FluentValidation" Version="9.5.2" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />

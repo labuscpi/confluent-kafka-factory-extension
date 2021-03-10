@@ -1,4 +1,5 @@
-using Confluent.Kafka.FactoryExtension.Models;
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -9,15 +10,25 @@ namespace ProducerApi.Example
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((_, configApp) =>
+                .ConfigureAppConfiguration((context, builder) =>
                 {
-                    configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);
-                    configApp.AddJsonFile("Secrets.json", true, false);
+                    var configuration = builder.Build();
+                    var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
+                    var directoryContents = context.HostingEnvironment.ContentRootFileProvider.GetDirectoryContents(configSubPath);
+                    foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
+                        builder.AddJsonFile(file.PhysicalPath, true, false);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
