@@ -16,6 +16,7 @@
 
 #endregion
 
+using System.Linq;
 using Confluent.Kafka.FactoryExtension.Extensions;
 using Confluent.Kafka.FactoryExtension.Models;
 using FactoryExtension.Services.Example.Consumers;
@@ -32,10 +33,13 @@ namespace ConsumerService.Example
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((_, configApp) =>
+                .ConfigureAppConfiguration((context, builder) =>
                 {
-                    configApp.AddJsonFile($"{nameof(KafkaSettings)}.json", false, false);
-                    configApp.AddJsonFile("Secrets.json", true, false);
+                    var configuration = builder.Build();
+                    var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
+                    var directoryContents = context.HostingEnvironment.ContentRootFileProvider.GetDirectoryContents(configSubPath);
+                    foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
+                        builder.AddJsonFile(file.PhysicalPath, true, false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -43,7 +47,7 @@ namespace ConsumerService.Example
                     services.TryAddKafkaFactories(configuration);
 
                     services.AddHostedService<Constellation>();
-                    // services.AddHostedService<Qualification>();
+                    services.AddHostedService<Qualification>();
                 });
     }
 }
