@@ -13,4 +13,8 @@
       <ProjectReference Include="..\FactoryExtension.Example.Utilities\FactoryExtension.Example.Utilities.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Consumers" />
+    </ItemGroup>
+
 </Project>

@@ -19,7 +19,7 @@
 using System.Linq;
 using Confluent.Kafka.FactoryExtension.Extensions;
 using Confluent.Kafka.FactoryExtension.Models;
-using FactoryExtension.Example.Services.Consumers;
+using Consumer.Example.WorkerService.Consumers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -46,8 +46,8 @@ namespace Consumer.Example.WorkerService
                     var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));
                     services.TryAddKafkaFactories(configuration);
 
-                    services.AddHostedService<Constellation>();
-                    // services.AddHostedService<Qualification>();
+                    services.AddHostedService<Constellation<string, string>>();
+                    // services.AddHostedService<Qualification<string, string>>();
                 });
     }
 }

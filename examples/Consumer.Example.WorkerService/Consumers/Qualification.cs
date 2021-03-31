@@ -24,19 +24,20 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
 using Confluent.Kafka.FactoryExtension.Interfaces.Handlers;
+using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace FactoryExtension.Example.Services.Consumers
+namespace Consumer.Example.WorkerService.Consumers
 {
-    public class Qualification : BackgroundService
+    public class Qualification<TKey, TValue> : BackgroundService
     {
-        private readonly IConsumerHandle<string, string> _handle;
-        private readonly ILogger<Qualification> _logger;
+        private readonly IConsumerHandle<TKey, TValue> _handle;
+        private readonly ILogger<Qualification<TKey, TValue>> _logger;
 
-        public Qualification(IConsumerFactory factory, ILogger<Qualification> logger)
+        public Qualification(IConsumerFactory factory, ILogger<Qualification<TKey, TValue>> logger)
         {
-            _handle = factory.Create<string, string>(nameof(Qualification));
+            _handle = factory.Create<TKey, TValue>(nameof(Qualification<TKey, TValue>));
             _logger = logger;
         }
 
@@ -58,23 +59,15 @@ namespace FactoryExtension.Example.Services.Consumers
                 try
                 {
                     var cr = consumer.Consume(cancellationToken);
-                    Log(LogLevel.Information, "{0}: {1}", cr.Message.Key, cr.Message.Value);
+                    _logger.LogInformation("{Key}: {Value}", cr.Message.Key, cr.Message.Value);
                 }
                 catch (OperationCanceledException)
                 {
                     break;
                 }
-                catch (ConsumeException e)
-                {
-                    Log(LogLevel.Error, "Consume error: {0}", e.Error.Reason);
-
-                    if (e.Error.IsFatal)
-                        break;
-                }
                 catch (Exception e)
                 {
-                    Log(LogLevel.Error, "Unexpected error: {0}", e.Message);
-                    break;
+                    _logger.LogError(e, "Unexpected error: {Message}", e.GetMessage());
                 }
             }
         }
@@ -88,13 +81,16 @@ namespace FactoryExtension.Example.Services.Consumers
                     .ToList();
 
         // Optional builder customization
-        private IConsumer<string, string> BuildConsumer()
+        private IConsumer<TKey, TValue> BuildConsumer()
             => _handle.Builder
-                .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
-                .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); })
+                .SetErrorHandler((_, error) =>
+                {
+                    _logger.LogDebug("{Reason}", error.Reason);
+                })
+                .SetLogHandler((_, message) =>
+                {
+                    _logger.LogDebug("{Message}", message.Message);
+                })
                 .Build();
-
-        private void Log(LogLevel logLevel, string format, params object[] args)
-            => _logger.Log(logLevel, format, args);
     }
 }

@@ -80,7 +80,7 @@ namespace Service.HttpClient.Services
         }
 
         private static HttpRequestMessage CreateRequestMessage()
-            => new(HttpMethod.Get, "WeatherForecast");
+            => new HttpRequestMessage(HttpMethod.Get, "WeatherForecast");
 
         private void LogException(Exception e)
             => _logger.LogError(e, "{Message}", e.Message);

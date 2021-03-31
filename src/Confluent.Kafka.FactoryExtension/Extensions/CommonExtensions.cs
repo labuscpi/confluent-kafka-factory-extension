@@ -16,7 +16,6 @@
 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using Confluent.Kafka.FactoryExtension.Factories;
 using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
@@ -31,7 +30,7 @@ namespace Confluent.Kafka.FactoryExtension.Extensions
         public static void AddConsumerFactory(this IServiceCollection services, Dictionary<string, ConsumerSettings> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
+                return;
 
             foreach (var (key, consumerSettings) in collection)
             {
@@ -49,7 +48,7 @@ namespace Confluent.Kafka.FactoryExtension.Extensions
         public static void AddProducerFactory(this IServiceCollection services, Dictionary<string, ProducerSettings> collection)
         {
             if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
+                return;
 
             foreach (var (key, producerSettings) in collection)
             {

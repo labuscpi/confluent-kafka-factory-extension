@@ -1,6 +1,4 @@
-#region Copyright
-
-// Copyright 2021. labuscpi
+﻿// Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#endregion
-
 using System;
 using System.Text;
-using Newtonsoft.Json;
 
-namespace FactoryExtension.Example.Utilities.Extensions
+namespace FactoryExtension.Example.Common.Extensions
 {
-    public static class CommonExtensions
+    public static class ExceptionExtensions
     {
-        public static string SerializeObject(this object value, Formatting formatting = Formatting.None)
-            => JsonConvert.SerializeObject(value, formatting);
-
-        public static T DeserializeObject<T>(this string value)
-            => JsonConvert.DeserializeObject<T>(value);
-
+        
         public static string GetMessage(this Exception ex)
         {
             var e = ex;

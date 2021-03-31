@@ -1,20 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Extensions" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\..\src\Confluent.Kafka.FactoryExtension\Confluent.Kafka.FactoryExtension.csproj" />
+      <ProjectReference Include="..\FactoryExtension.Example.Common\FactoryExtension.Example.Common.csproj" />
     </ItemGroup>
 
 </Project>

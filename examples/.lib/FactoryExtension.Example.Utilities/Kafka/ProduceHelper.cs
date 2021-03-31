@@ -16,103 +16,63 @@
 
 #endregion
 
-using System;
-using System.Collections.Concurrent;
-using System.Threading;
+using System.Threading.Tasks;
 using Confluent.Kafka;
-using FactoryExtension.Example.Abstractions.Interfaces;
+using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
+using FactoryExtension.Example.Utilities.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace FactoryExtension.Example.Utilities.Kafka
 {
-    public class ProduceHelper : IProduceHelper, IProduceHelperIngest
+    public class ProduceHelper<TKey, TValue> : IProduceHelper<TKey, TValue>
     {
-        private readonly ConcurrentDictionary<Guid, object> _messageCollection;
-        private readonly ConcurrentDictionary<Guid, object> _reportCollection;
-        private readonly ConcurrentQueue<Guid> _queue;
+        private const string ProducerName = "Contradiction";
+        
+        private readonly IProducerFactory _factory;
+        private readonly ILogger<ProduceHelper<TKey, TValue>> _logger;
 
-        public ProduceHelper()
+        public ProduceHelper(IProducerFactory factory, ILogger<ProduceHelper<TKey, TValue>> logger)
         {
-            _messageCollection = new ConcurrentDictionary<Guid, object>();
-            _reportCollection = new ConcurrentDictionary<Guid, object>();
-            _queue = new ConcurrentQueue<Guid>();
-        }
-
-        public string EnqueueMessage<TKey, TValue>(Message<TKey, TValue> message, bool enableReport)
-        {
-            var guid = Guid.NewGuid();
-
-            _messageCollection.TryAdd(guid, message);
-            if (enableReport)
-                _reportCollection.TryAdd(guid, null);
-            _queue.Enqueue(guid);
-
-            return GetKey(guid);
-        }
-
-        public DeliveryResult<TKey, TValue> GetDeliveryResult<TKey, TValue>(string key, CancellationToken cancellationToken = default)
-        {
-            var guid = GetGuid(key);
-
-            CheckToken(ref cancellationToken);
+            _factory = factory;
+            _logger = logger;
             
-            try
+            ConfigureHandle();
+        }
+
+        public Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value)
+        {
+            var message = new Message<TKey, TValue>
             {
-                while (!cancellationToken.IsCancellationRequested)
+                Value = value
+            };
+
+            return Produce(message);
+        }
+
+        public Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value)
+        {
+            var message = new Message<TKey, TValue>
+            {
+                Key = key,
+                Value = value
+            };
+
+            return Produce(message);
+        }
+        
+        private Task<DeliveryResult<TKey, TValue>> Produce(Message<TKey, TValue> message)
+            => _factory.Create<TKey, TValue>(ProducerName).ProduceAsync(message);
+        
+        private void ConfigureHandle()
+            => _factory.Create<TKey, TValue>(ProducerName)
+                .Builder
+                .SetErrorHandler((_, e) =>
                 {
-                    if(!_reportCollection.TryGetValue(guid, out var value))
-                        continue;
-                        
-                    if (value != null)
-                        break;
-                }
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                _reportCollection.TryRemove(guid, out var resultObject);
-
-                return (DeliveryResult<TKey, TValue>) resultObject;
-            }
-            catch (OperationCanceledException)
-            {
-                _reportCollection.TryRemove(guid, out _);
-                throw;
-            }
-        }
-
-        private static void CheckToken(ref CancellationToken cancellationToken)
-        {
-            if (!cancellationToken.CanBeCanceled)
-                cancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(15)).Token;
-        }
-
-        public (bool success, Guid guid) TryGetMessage<TKey, TValue>(out Message<TKey, TValue> data)
-        {
-            data = null;
-
-            if (_queue.IsEmpty)
-                return (false, Guid.Empty);
-
-            if (!_queue.TryDequeue(out var guid))
-                return (false, Guid.Empty);
-
-            if (!_messageCollection.TryRemove(guid, out var value))
-                return (false, guid);
-
-            if (value is not Message<TKey, TValue>)
-                return (false, guid);
-
-            data = (Message<TKey, TValue>) value;
-
-            return (true, guid);
-        }
-
-        public bool TryAddResult(Guid guid, object newValue)
-            => _reportCollection.TryGetValue(guid, out var comparisonValue) && _reportCollection.TryUpdate(guid, newValue, comparisonValue);
-
-        private static string GetKey(Guid guid)
-            => guid.ToString("N");
-
-        private static Guid GetGuid(string key)
-            => Guid.Parse(key);
+                    _logger.LogDebug("[{Producer}::Error Handler::{Reason}]", ProducerName, e.Reason);
+                })
+                .SetLogHandler((_, m) =>
+                {
+                    _logger.LogDebug("[{Producer}::Log Handler::{Message}]", ProducerName, m.Message);
+                });
     }
 }

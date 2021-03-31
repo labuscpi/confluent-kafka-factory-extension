@@ -1,4 +1,6 @@
-﻿// Copyright 2021. labuscpi
+#region Copyright
+
+// Copyright 2021. labuscpi
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using Confluent.Kafka;
+#endregion
 
-namespace FactoryExtension.Example.Abstractions.Interfaces
+using Newtonsoft.Json;
+
+namespace FactoryExtension.Example.Common.Extensions
 {
-    public interface IProduceHelperIngest
+    public static class JsonExtensions
     {
-        string EnqueueMessage<TKey, TValue>(Message<TKey, TValue> message, bool enableReport);
-        
-        DeliveryResult<TKey, TValue> GetDeliveryResult<TKey, TValue>(string key, CancellationToken cancellationToken = default);
+        public static string SerializeObject(this object value, Formatting formatting = Formatting.None)
+            => JsonConvert.SerializeObject(value, formatting);
+
+        public static T DeserializeObject<T>(this string value)
+            => JsonConvert.DeserializeObject<T>(value);
     }
 }

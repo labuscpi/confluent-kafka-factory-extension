@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using Confluent.Kafka;
-using FactoryExtension.Example.Abstractions.Interfaces;
 using FactoryExtension.Example.Abstractions.Models;
-using FactoryExtension.Example.Utilities.Extensions;
+using FactoryExtension.Example.Common.Extensions;
+using FactoryExtension.Example.Utilities.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,58 +15,34 @@ namespace Producer.Example.Api.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private readonly IProduceHelperIngest _collection;
+        private readonly IProduceHelper<Null, string> _produceHelper;
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(IProduceHelperIngest collection, ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(IProduceHelper<Null, string> produceHelper, ILogger<WeatherForecastController> logger)
         {
-            _collection = collection;
+            _produceHelper = produceHelper;
             _logger = logger;
         }
 
         [HttpGet]
-        public ActionResult GetWeatherForecastAsync()
+        public async Task<ActionResult> GetWeatherForecastAsync()
         {
             try
             {
-                return SendWeatherForecast<Null, string>(GetWeatherForecast().SerializeObject());
+                var forecast = GetWeatherForecast().SerializeObject();
+                
+                var result = await _produceHelper.SendMessageAsync(forecast);
+
+                return new ObjectResult(result);
             }
             catch (Exception e)
             {
-                const string message = "Unexpected error: {0}";
-                _logger.LogError(e, message, e.GetMessage());
+                _logger.LogError(e, "[Unexpected error::{NewLine}{Message}]", Environment.NewLine, e.GetMessage());
 
                 return new BadRequestObjectResult(new
                 {
                     Message = e.GetMessage(),
                     e.StackTrace
-                });
-            }
-        }
-
-        private ObjectResult SendWeatherForecast<TKey, TValue>(TValue value)
-        {
-            try
-            {
-                var message = new Message<TKey, TValue>
-                {
-                    Value = value,
-                    Timestamp = Timestamp.Default
-                };
-            
-                var key = _collection.EnqueueMessage(message, true);
-
-                var report = _collection.GetDeliveryResult<TKey, TValue>(key);
-                
-                return new OkObjectResult(report);
-            }
-            catch (OperationCanceledException oce)
-            {
-                return new BadRequestObjectResult(new
-                {
-                    Message = oce.GetMessage(),
-                    oce.CancellationToken,
-                    oce.StackTrace
                 });
             }
         }

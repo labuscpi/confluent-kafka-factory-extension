@@ -1,7 +1,7 @@
+using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtension.Extensions;
 using Confluent.Kafka.FactoryExtension.Models;
-using FactoryExtension.Example.Abstractions.Interfaces;
-using FactoryExtension.Example.Services.Producers;
+using FactoryExtension.Example.Utilities.Interfaces;
 using FactoryExtension.Example.Utilities.Kafka;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,14 +23,11 @@ namespace Producer.Example.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddSingleton<ProduceHelper>();
-            services.TryAddSingleton<IProduceHelperIngest>(x => x.GetRequiredService<ProduceHelper>());
-            services.TryAddSingleton<IProduceHelper>(x => x.GetRequiredService<ProduceHelper>());
-            
+
             var kafkaSettings = Configuration.GetSection(nameof(KafkaSettings));
             services.TryAddKafkaFactories(kafkaSettings);
-            services.AddHostedService<Contradiction>();
 
+            services.TryAddSingleton<IProduceHelper<Null, string>, ProduceHelper<Null, string>>();
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Producer.Example.Api", Version = "v1"}); });
         }

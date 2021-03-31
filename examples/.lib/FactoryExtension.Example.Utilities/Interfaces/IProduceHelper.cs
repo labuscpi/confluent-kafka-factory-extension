@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using System.Threading.Tasks;
 using Confluent.Kafka;
 
-namespace FactoryExtension.Example.Abstractions.Interfaces
+namespace FactoryExtension.Example.Utilities.Interfaces
 {
-    public interface IProduceHelper
+    public interface IProduceHelper<TKey, TValue>
     {
-        (bool success, Guid guid) TryGetMessage<TKey, TValue>(out Message<TKey, TValue> data);
-
-        bool TryAddResult(Guid guid, object newValue);
+        Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value);
+        Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value);
     }
 }
