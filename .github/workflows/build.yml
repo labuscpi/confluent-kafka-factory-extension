@@ -16,10 +16,10 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '3.1.x'
     - name: Install dependencies
       run: dotnet restore Confluent.Kafka.FactoryExtension.sln
     - name: Build
       run: dotnet build Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore      
     - name: Test
-      run: dotnet test Confluent.Kafka.FactoryExtension.sln --no-restore --verbosity normal
+      run: dotnet test Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore --verbosity normal

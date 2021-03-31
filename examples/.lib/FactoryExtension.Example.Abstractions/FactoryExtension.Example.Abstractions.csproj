@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\src\Confluent.Kafka.FactoryExtension\Confluent.Kafka.FactoryExtension.csproj" />
+      <ProjectReference Include="..\FactoryExtension.Example.Common\FactoryExtension.Example.Common.csproj" />
+    </ItemGroup>
+
+</Project>

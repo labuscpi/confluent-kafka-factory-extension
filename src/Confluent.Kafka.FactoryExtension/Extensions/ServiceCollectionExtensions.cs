@@ -39,9 +39,11 @@ namespace Confluent.Kafka.FactoryExtension.Extensions
 
             services.TryAddSingleton(settings);
 
-            services.AddConsumerFactory(settings.Consumers);
+            if (settings.Consumers != null)
+                services.AddConsumerFactory(settings.Consumers);
 
-            services.AddProducerFactory(settings.Producers);
+            if (settings.Producers != null)
+                services.AddProducerFactory(settings.Producers);
 
             return services;
         }

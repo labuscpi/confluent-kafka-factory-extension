@@ -28,7 +28,7 @@ namespace Confluent.Kafka.FactoryExtension.Collections
         public static ClientCollection Instance => LazyInstance.Value;
 
         private static readonly Lazy<ClientCollection> LazyInstance =
-            new(() => new ClientCollection(), LazyThreadSafetyMode.ExecutionAndPublication);
+            new Lazy<ClientCollection>(() => new ClientCollection(), LazyThreadSafetyMode.ExecutionAndPublication);
 
         public readonly ConcurrentDictionary<string, Lazy<ClientHandle>> Handles;
 
