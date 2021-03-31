@@ -14,7 +14,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '3.1.x'
     - name: Pack
       run: dotnet pack Confluent.Kafka.FactoryExtension.csproj -c Release -v n /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/releases/tag/${{ github.event.release.tag_name }}"
       working-directory: src/Confluent.Kafka.FactoryExtension
