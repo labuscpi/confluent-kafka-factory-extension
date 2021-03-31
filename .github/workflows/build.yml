@@ -22,4 +22,4 @@ jobs:
     - name: Build
       run: dotnet build Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore      
     - name: Test
-      run: dotnet test Confluent.Kafka.FactoryExtension.sln --no-restore --verbosity normal
+      run: dotnet test Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore --verbosity normal
