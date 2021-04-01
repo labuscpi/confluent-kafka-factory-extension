@@ -1,4 +1,4 @@
-name: Publish netcoreapp3.1
+name: Publish - netcoreapp3.1
 
 on:  
   release:
