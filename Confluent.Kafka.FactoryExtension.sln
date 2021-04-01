@@ -27,6 +27,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryExtension.Example.Ut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryExtension.Example.Common", "examples\.lib\FactoryExtension.Example.Common\FactoryExtension.Example.Common.csproj", "{43BD6310-472F-40AD-AEAB-7A2455590BFF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{F7F358DF-B262-4EBD-A359-B88B4EBEE221}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{D9D7B3C0-D280-4EFA-A59E-44B4A6C3208D}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\build.yml = .github\workflows\build.yml
+	.github\workflows\publish.yml = .github\workflows\publish.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +87,7 @@ Global
 		{26BEBF9F-F973-4793-AA02-5EA60EAD9D2C} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
 		{7122369B-77EA-443F-9581-EDF1B59354F4} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
 		{43BD6310-472F-40AD-AEAB-7A2455590BFF} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
+		{D9D7B3C0-D280-4EFA-A59E-44B4A6C3208D} = {F7F358DF-B262-4EBD-A359-B88B4EBEE221}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF6EEC15-1AA3-4741-BD5C-1D651A23AAF4}

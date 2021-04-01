@@ -1,4 +1,4 @@
-name: .NET Core
+name: netcoreapp3.1
 
 on:
   push:

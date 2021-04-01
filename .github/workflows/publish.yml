@@ -1,4 +1,4 @@
-name: Publish to NuGet & GitHub
+name: Publish netcoreapp3.1
 
 on:  
   release:
