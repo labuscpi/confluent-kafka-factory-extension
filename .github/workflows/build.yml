@@ -12,18 +12,18 @@ jobs:
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
-    strategy:
-      matrix:
-        dotnet: [ '3.1.x', '5.0.x' ]
-    name: Dotnet ${{ matrix.dotnet }} sample
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET Core
+      - name: Setup .NET Core 3.1.x
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ matrix.dotnet }}
+          dotnet-version: '3.1.x'
+      - name: Setup .NET Core 5.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
       - name: Restore
-        run: dotnet restore Confluent.Kafka.FactoryExtension.sln
+        run: dotnet restore Confluent.Kafka.FactoryExtension.sln --verbosity minimal --force
       - name: Build
         run: dotnet build Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore --verbosity minimal
       - name: Test
