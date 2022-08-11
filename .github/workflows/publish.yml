@@ -29,7 +29,7 @@ jobs:
       - name: Build
         run: dotnet build Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore --verbosity minimal
       - name: Pack
-        run: dotnet pack Confluent.Kafka.FactoryExtension.csproj --configuration Release --no-build --verbosity minimal -v n /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/releases/tag/${{ github.event.release.tag_name }}"
+        run: dotnet pack Confluent.Kafka.FactoryExtension.csproj --configuration Release --no-build --verbosity minimal /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/releases/tag/${{ github.event.release.tag_name }}"
         working-directory: src/Confluent.Kafka.FactoryExtension
       - name: Publish Package to nuget.org
         run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGETAPIKEY }} --source https://api.nuget.org/v3/index.json --no-symbols true --skip-duplicate
