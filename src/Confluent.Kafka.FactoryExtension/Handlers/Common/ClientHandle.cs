@@ -16,10 +16,9 @@
 
 #endregion
 
-namespace Confluent.Kafka.FactoryExtension.Handlers.Common
+namespace Confluent.Kafka.FactoryExtension.Handlers.Common;
+
+public abstract class ClientHandle
 {
-    public abstract class ClientHandle
-    {
-        public string Topic { get; protected set; }
-    }
+    public string Topic { get; protected set; }
 }
