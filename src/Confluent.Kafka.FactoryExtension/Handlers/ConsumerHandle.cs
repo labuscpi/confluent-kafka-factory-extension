@@ -27,99 +27,98 @@ using Confluent.Kafka.FactoryExtension.Handlers.Common;
 using Confluent.Kafka.FactoryExtension.Interfaces.Handlers;
 using Confluent.Kafka.FactoryExtension.Models.Settings.Clients;
 
-namespace Confluent.Kafka.FactoryExtension.Handlers
+namespace Confluent.Kafka.FactoryExtension.Handlers;
+
+internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHandle<TKey, TValue>, IDisposable
 {
-    internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHandle<TKey, TValue>, IDisposable
+    [ExcludeFromCodeCoverage] public string Separator { get; }
+    [ExcludeFromCodeCoverage] public CustomConsumerBuilder<TKey, TValue> Builder { get; }
+    [ExcludeFromCodeCoverage] public IConsumer<TKey, TValue> Consumer => Builder.Build();
+
+    private readonly StringComparer _stringComparer = StringComparer.Ordinal;
+
+    public ConsumerHandle(ConsumerSettings settings)
     {
-        [ExcludeFromCodeCoverage] public string Separator { get; }
-        [ExcludeFromCodeCoverage] public CustomConsumerBuilder<TKey, TValue> Builder { get; }
-        [ExcludeFromCodeCoverage] public IConsumer<TKey, TValue> Consumer => Builder.Build();
+        if (settings == null)
+            throw new ArgumentNullException(nameof(settings));
 
-        private readonly StringComparer _stringComparer = StringComparer.Ordinal;
+        Topic = settings.Topic;
+        Separator = settings.Separator;
 
-        public ConsumerHandle(ConsumerSettings settings)
+        var config = new ConsumerConfig();
+        foreach (var (key, value) in settings.Config.Where(x => !string.IsNullOrEmpty(x.Value)))
+            config.Set(key, value);
+
+        Builder = new CustomConsumerBuilder<TKey, TValue>(config);
+    }
+
+    [ExcludeFromCodeCoverage]
+    public ConsumeResult<TKey, TValue> Consume(int millisecondsTimeout)
+        => Subscribe().Consumer.Consume(millisecondsTimeout);
+
+    [ExcludeFromCodeCoverage]
+    public ConsumeResult<TKey, TValue> Consume(CancellationToken cancellationToken = default)
+        => Subscribe().Consumer.Consume(cancellationToken);
+
+    [ExcludeFromCodeCoverage]
+    public ConsumeResult<TKey, TValue> Consume(TimeSpan timeout)
+        => Subscribe().Consumer.Consume(timeout);
+
+    [ExcludeFromCodeCoverage]
+    private ConsumerHandle<TKey, TValue> Subscribe()
+    {
+        var subscription = CreateSubscription();
+
+        var consumerSubscription = Consumer.Subscription;
+        if (consumerSubscription == null || !consumerSubscription.Any())
         {
-            if (settings == null)
-                throw new ArgumentNullException(nameof(settings));
-
-            Topic = settings.Topic;
-            Separator = settings.Separator;
-
-            var config = new ConsumerConfig();
-            foreach (var (key, value) in settings.Config.Where(x => !string.IsNullOrEmpty(x.Value)))
-                config.Set(key, value);
-
-            Builder = new CustomConsumerBuilder<TKey, TValue>(config);
-        }
-
-        [ExcludeFromCodeCoverage]
-        public ConsumeResult<TKey, TValue> Consume(int millisecondsTimeout)
-            => Subscribe().Consumer.Consume(millisecondsTimeout);
-
-        [ExcludeFromCodeCoverage]
-        public ConsumeResult<TKey, TValue> Consume(CancellationToken cancellationToken = default)
-            => Subscribe().Consumer.Consume(cancellationToken);
-
-        [ExcludeFromCodeCoverage]
-        public ConsumeResult<TKey, TValue> Consume(TimeSpan timeout)
-            => Subscribe().Consumer.Consume(timeout);
-
-        [ExcludeFromCodeCoverage]
-        private ConsumerHandle<TKey, TValue> Subscribe()
-        {
-            var subscription = CreateSubscription();
-
-            var consumerSubscription = Consumer.Subscription;
-            if (consumerSubscription == null || !consumerSubscription.Any())
-            {
-                Consumer.Subscribe(subscription);
-                return this;
-            }
-
-            consumerSubscription.Sort(_stringComparer);
-
-            if (subscription.SequenceEqual(consumerSubscription))
-                return this;
-
-            Consumer.Unsubscribe();
             Consumer.Subscribe(subscription);
-
             return this;
         }
 
-        [ExcludeFromCodeCoverage]
-        private List<string> CreateSubscription()
+        consumerSubscription.Sort(_stringComparer);
+
+        if (subscription.SequenceEqual(consumerSubscription))
+            return this;
+
+        Consumer.Unsubscribe();
+        Consumer.Subscribe(subscription);
+
+        return this;
+    }
+
+    [ExcludeFromCodeCoverage]
+    private List<string> CreateSubscription()
+    {
+        var subscriptions = string.IsNullOrWhiteSpace(Separator)
+            ? new List<string> { Topic }
+            : Topic
+                .Split(Separator, StringSplitOptions.RemoveEmptyEntries)
+                .Distinct(_stringComparer)
+                .ToList();
+
+        if (subscriptions == null || !subscriptions.Any())
+            throw new ArgumentNullException(nameof(Topic));
+
+        subscriptions.Sort(_stringComparer);
+
+        return subscriptions;
+    }
+
+    [ExcludeFromCodeCoverage]
+    public void Dispose()
+    {
+        try
         {
-            var subscriptions = string.IsNullOrWhiteSpace(Separator)
-                ? new List<string> {Topic}
-                : Topic
-                    .Split(Separator, StringSplitOptions.RemoveEmptyEntries)
-                    .Distinct(_stringComparer)
-                    .ToList();
-
-            if (subscriptions == null || !subscriptions.Any())
-                throw new ArgumentNullException(nameof(Topic));
-
-            subscriptions.Sort(_stringComparer);
-
-            return subscriptions;
+            Consumer?.Close();
+            Consumer?.Dispose();
         }
-
-        [ExcludeFromCodeCoverage]
-        public void Dispose()
+        catch (Exception e)
         {
-            try
-            {
-                Consumer?.Close();
-                Consumer?.Dispose();
-            }
-            catch (Exception e)
-            {
-                if (e is TaskCanceledException)
-                    return;
+            if (e is TaskCanceledException)
+                return;
 
-                throw;
-            }
+            throw;
         }
     }
 }

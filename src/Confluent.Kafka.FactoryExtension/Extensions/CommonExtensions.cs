@@ -23,43 +23,42 @@ using Confluent.Kafka.FactoryExtension.Models.Settings.Clients;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Confluent.Kafka.FactoryExtension.Extensions
+namespace Confluent.Kafka.FactoryExtension.Extensions;
+
+internal static class CommonExtensions
 {
-    internal static class CommonExtensions
+    public static void AddConsumerFactory(this IServiceCollection services, Dictionary<string, ConsumerSettings> collection)
     {
-        public static void AddConsumerFactory(this IServiceCollection services, Dictionary<string, ConsumerSettings> collection)
+        if (collection == null)
+            return;
+
+        foreach (var (key, consumerSettings) in collection)
         {
-            if (collection == null)
-                return;
-
-            foreach (var (key, consumerSettings) in collection)
+            services.AddOptions<ConsumerSettings>(key).Configure(cs =>
             {
-                services.AddOptions<ConsumerSettings>(key).Configure(cs =>
-                {
-                    cs.Topic = consumerSettings.Topic;
-                    cs.Separator = consumerSettings.Separator;
-                    cs.Config = consumerSettings.Config;
-                });
-            }
-
-            services.TryAddSingleton<IConsumerFactory, ConsumerFactory>();
+                cs.Topic = consumerSettings.Topic;
+                cs.Separator = consumerSettings.Separator;
+                cs.Config = consumerSettings.Config;
+            });
         }
 
-        public static void AddProducerFactory(this IServiceCollection services, Dictionary<string, ProducerSettings> collection)
+        services.TryAddSingleton<IConsumerFactory, ConsumerFactory>();
+    }
+
+    public static void AddProducerFactory(this IServiceCollection services, Dictionary<string, ProducerSettings> collection)
+    {
+        if (collection == null)
+            return;
+
+        foreach (var (key, producerSettings) in collection)
         {
-            if (collection == null)
-                return;
-
-            foreach (var (key, producerSettings) in collection)
+            services.AddOptions<ProducerSettings>(key).Configure(ps =>
             {
-                services.AddOptions<ProducerSettings>(key).Configure(ps =>
-                {
-                    ps.Topic = producerSettings.Topic;
-                    ps.Config = producerSettings.Config;
-                });
-            }
-
-            services.TryAddSingleton<IProducerFactory, ProducerFactory>();
+                ps.Topic = producerSettings.Topic;
+                ps.Config = producerSettings.Config;
+            });
         }
+
+        services.TryAddSingleton<IProducerFactory, ProducerFactory>();
     }
 }

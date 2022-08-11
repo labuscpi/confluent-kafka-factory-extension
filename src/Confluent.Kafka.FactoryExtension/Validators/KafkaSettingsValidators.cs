@@ -21,59 +21,63 @@ using Confluent.Kafka.FactoryExtension.Models;
 using Confluent.Kafka.FactoryExtension.Models.Settings.Clients;
 using FluentValidation;
 
-namespace Confluent.Kafka.FactoryExtension.Validators
+namespace Confluent.Kafka.FactoryExtension.Validators;
+
+public class ClientSettingsValidator : AbstractValidator<KafkaSettings>
 {
-    public class ClientSettingsValidator : AbstractValidator<KafkaSettings>
+    public ClientSettingsValidator()
     {
-        public ClientSettingsValidator()
-        {
-            CascadeMode = CascadeMode.Stop;
-            RuleForEach(x => x.Consumers).SetValidator(new ConsumersValidator());
-            RuleForEach(x => x.Producers).SetValidator(new ProducersValidator());
-        }
+        RuleLevelCascadeMode = CascadeMode.Stop;
+            
+        RuleForEach(x => x.Consumers).SetValidator(new ConsumersValidator());
+        RuleForEach(x => x.Producers).SetValidator(new ProducersValidator());
     }
+}
 
-    public class ConsumersValidator : AbstractValidator<KeyValuePair<string, ConsumerSettings>>
+public class ConsumersValidator : AbstractValidator<KeyValuePair<string, ConsumerSettings>>
+{
+    public ConsumersValidator()
     {
-        public ConsumersValidator()
-        {
-            CascadeMode = CascadeMode.Stop;
-            RuleFor(x => x.Key).NotEmpty();
-            RuleFor(x => x.Value).SetValidator(new ConsumerSettingsValidator());
-        }
+        RuleLevelCascadeMode = CascadeMode.Stop;
+            
+        RuleFor(x => x.Key).NotEmpty();
+        RuleFor(x => x.Value).SetValidator(new ConsumerSettingsValidator());
     }
+}
 
-    public class ConsumerSettingsValidator : AbstractValidator<ConsumerSettings>
+public class ConsumerSettingsValidator : AbstractValidator<ConsumerSettings>
+{
+    public ConsumerSettingsValidator()
     {
-        public ConsumerSettingsValidator()
-        {
-            CascadeMode = CascadeMode.Stop;
-            RuleFor(x => x.Topic).NotEmpty();
-            RuleFor(x => x.Config).NotEmpty();
-            When(x => x.Config != null,
-                () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
-        }
+        RuleLevelCascadeMode = CascadeMode.Stop;
+            
+        RuleFor(x => x.Topic).NotEmpty();
+        RuleFor(x => x.Config).NotEmpty();
+        When(x => x.Config != null,
+            () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
     }
+}
 
-    public class ProducersValidator : AbstractValidator<KeyValuePair<string, ProducerSettings>>
+public class ProducersValidator : AbstractValidator<KeyValuePair<string, ProducerSettings>>
+{
+    public ProducersValidator()
     {
-        public ProducersValidator()
-        {
-            CascadeMode = CascadeMode.Stop;
-            RuleFor(x => x.Key).NotEmpty();
-            RuleFor(x => x.Value).SetValidator(new ProducerSettingsValidator());
-        }
+        RuleLevelCascadeMode = CascadeMode.Stop;
+            
+        RuleFor(x => x.Key).NotEmpty();
+        RuleFor(x => x.Value).SetValidator(new ProducerSettingsValidator());
     }
+}
 
-    public class ProducerSettingsValidator : AbstractValidator<ProducerSettings>
+public class ProducerSettingsValidator : AbstractValidator<ProducerSettings>
+{
+    public ProducerSettingsValidator()
     {
-        public ProducerSettingsValidator()
-        {
-            CascadeMode = CascadeMode.Stop;
-            RuleFor(x => x.Topic).NotEmpty();
-            RuleFor(x => x.Config).NotEmpty();
-            When(x => x.Config != null,
-                () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
-        }
+        RuleLevelCascadeMode = CascadeMode.Stop;
+            
+        RuleFor(x => x.Topic).NotEmpty();
+        RuleFor(x => x.Config).NotEmpty();
+        When(x => x.Config != null,
+            () => RuleFor(x => x.Config.BootstrapServers).NotEmpty());
     }
 }
