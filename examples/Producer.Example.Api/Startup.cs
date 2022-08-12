@@ -1,6 +1,6 @@
 using Confluent.Kafka;
-using Confluent.Kafka.FactoryExtension.Extensions;
-using Confluent.Kafka.FactoryExtension.Models;
+using Confluent.Kafka.FactoryExtensions.Extensions;
+using Confluent.Kafka.FactoryExtensions.Models;
 using FactoryExtension.Example.Utilities.Interfaces;
 using FactoryExtension.Example.Utilities.Kafka;
 using Microsoft.AspNetCore.Builder;

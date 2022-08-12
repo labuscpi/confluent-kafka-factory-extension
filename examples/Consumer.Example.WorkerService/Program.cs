@@ -17,8 +17,8 @@
 #endregion
 
 using System.Linq;
-using Confluent.Kafka.FactoryExtension.Extensions;
-using Confluent.Kafka.FactoryExtension.Models;
+using Confluent.Kafka.FactoryExtensions.Extensions;
+using Confluent.Kafka.FactoryExtensions.Models;
 using Consumer.Example.WorkerService.Consumers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

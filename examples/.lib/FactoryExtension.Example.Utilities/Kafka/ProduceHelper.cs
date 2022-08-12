@@ -18,7 +18,7 @@
 
 using System.Threading.Tasks;
 using Confluent.Kafka;
-using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
+using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
 using FactoryExtension.Example.Utilities.Interfaces;
 using Microsoft.Extensions.Logging;
 

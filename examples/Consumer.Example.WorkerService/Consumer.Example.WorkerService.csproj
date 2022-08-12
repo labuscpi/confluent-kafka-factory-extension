@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Confluent.Kafka.FactoryExtension\Confluent.Kafka.FactoryExtension.csproj" />
+      <ProjectReference Include="..\..\src\Confluent.Kafka.FactoryExtensions\Confluent.Kafka.FactoryExtensions.csproj" />
       <ProjectReference Include="..\.lib\FactoryExtension.Example.Abstractions\FactoryExtension.Example.Abstractions.csproj" />
     </ItemGroup>
 </Project>
