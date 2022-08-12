@@ -19,8 +19,8 @@ jobs:
         with:
           dotnet-version: '6.0.x'
       - name: Restore
-        run: dotnet restore Confluent.Kafka.FactoryExtension.sln --verbosity minimal --force
+        run: dotnet restore confluent-kafka-factory-extension.sln --verbosity minimal --force
       - name: Build
-        run: dotnet build Confluent.Kafka.FactoryExtension.sln --configuration Release --no-restore --verbosity minimal
+        run: dotnet build confluent-kafka-factory-extension.sln --configuration Release --no-restore --verbosity minimal
       - name: Test
-        run: dotnet test Confluent.Kafka.FactoryExtension.sln --configuration Release --no-build --verbosity minimal
+        run: dotnet test confluent-kafka-factory-extension.sln --configuration Release --no-build --verbosity minimal
