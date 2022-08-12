@@ -5,11 +5,9 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E754EBFF-C94E-4573-917E-C0E91EDDB3E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Confluent.Kafka.FactoryExtension", "src\Confluent.Kafka.FactoryExtension\Confluent.Kafka.FactoryExtension.csproj", "{AA492B83-0735-43EB-A81F-C9005165CB4C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E3F12335-8C3C-4284-AC33-0BC6893F8F45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Confluent.Kafka.FactoryExtension.Tests", "tests\Confluent.Kafka.FactoryExtension.Tests\Confluent.Kafka.FactoryExtension.Tests.csproj", "{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Confluent.Kafka.FactoryExtensions.Tests", "tests\Confluent.Kafka.FactoryExtensions.Tests\Confluent.Kafka.FactoryExtensions.Tests.csproj", "{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{F9691896-F4F8-45FB-8F7A-A8199E782D93}"
 EndProject
@@ -35,16 +33,14 @@ ProjectSection(SolutionItems) = preProject
 	.github\workflows\publish.yml = .github\workflows\publish.yml
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confluent.Kafka.FactoryExtensions", "src\Confluent.Kafka.FactoryExtensions\Confluent.Kafka.FactoryExtensions.csproj", "{1CAC03C3-CFA4-42BA-B918-E9995FA1C838}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA492B83-0735-43EB-A81F-C9005165CB4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -73,12 +69,15 @@ Global
 		{43BD6310-472F-40AD-AEAB-7A2455590BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43BD6310-472F-40AD-AEAB-7A2455590BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43BD6310-472F-40AD-AEAB-7A2455590BFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1CAC03C3-CFA4-42BA-B918-E9995FA1C838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CAC03C3-CFA4-42BA-B918-E9995FA1C838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CAC03C3-CFA4-42BA-B918-E9995FA1C838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CAC03C3-CFA4-42BA-B918-E9995FA1C838}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{AA492B83-0735-43EB-A81F-C9005165CB4C} = {E754EBFF-C94E-4573-917E-C0E91EDDB3E7}
 		{8F1AFF62-1F79-45F5-ACCA-41FEA4C7FDAB} = {E3F12335-8C3C-4284-AC33-0BC6893F8F45}
 		{254AB818-340B-4D08-809A-D0D186EDA21A} = {F9691896-F4F8-45FB-8F7A-A8199E782D93}
 		{FA60FEBD-112B-4149-B3D3-56AC3EE2FA88} = {F9691896-F4F8-45FB-8F7A-A8199E782D93}
@@ -88,6 +87,7 @@ Global
 		{7122369B-77EA-443F-9581-EDF1B59354F4} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
 		{43BD6310-472F-40AD-AEAB-7A2455590BFF} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
 		{9C362D6B-54FA-4862-A88C-84CF2A923CF7} = {781C3B05-6DFC-474A-8668-0E4D915F92E3}
+		{1CAC03C3-CFA4-42BA-B918-E9995FA1C838} = {E754EBFF-C94E-4573-917E-C0E91EDDB3E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF6EEC15-1AA3-4741-BD5C-1D651A23AAF4}

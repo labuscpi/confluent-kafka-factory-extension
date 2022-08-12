@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Confluent.Kafka.FactoryExtension\Confluent.Kafka.FactoryExtension.csproj" />
+      <ProjectReference Include="..\..\..\src\Confluent.Kafka.FactoryExtensions\Confluent.Kafka.FactoryExtensions.csproj" />
       <ProjectReference Include="..\FactoryExtension.Example.Common\FactoryExtension.Example.Common.csproj" />
     </ItemGroup>
 

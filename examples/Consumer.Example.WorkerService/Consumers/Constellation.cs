@@ -19,8 +19,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Confluent.Kafka.FactoryExtension.Interfaces.Factories;
-using Confluent.Kafka.FactoryExtension.Interfaces.Handlers;
+using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
+using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
