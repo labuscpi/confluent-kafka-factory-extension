@@ -50,9 +50,12 @@ namespace Consumer.Example.WorkerService.Consumers
 
         private void StartConsumerLoop(CancellationToken cancellationToken)
         {
-            var consumer = BuildConsumer();
+            using var consumer = _handle.Builder
+                .SetErrorHandler(ErrorHandler())
+                .SetLogHandler(LogHandler())
+                .Build();
 
-            consumer.Subscribe(Topics());
+            consumer.Subscribe(_handle.CreateTopics());
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -71,6 +74,19 @@ namespace Consumer.Example.WorkerService.Consumers
                 }
             }
         }
+
+        private Action<IConsumer<TKey, TValue>, Error> ErrorHandler()
+            => (_, e) =>
+            {
+                var ex = new KafkaException(e);
+                _logger.LogError(ex, "{Message}",ex.Message);
+            };
+
+        private Action<IConsumer<TKey, TValue>, LogMessage> LogHandler()
+            => (_, logMessage) =>
+            {
+                _logger.LogInformation("{@Message}", logMessage);
+            };
 
         private IEnumerable<string> Topics()
             => string.IsNullOrWhiteSpace(_handle.Separator)

@@ -17,6 +17,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Confluent.Kafka.FactoryExtensions.Builders;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers.Common;
@@ -26,6 +27,7 @@ namespace Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
 public interface IConsumerHandle<TKey, TValue> : IClientHandle
 {
     string Separator { get;  }
+    List<string> CreateTopics();
     CustomConsumerBuilder<TKey, TValue> Builder { get; }
     IConsumer<TKey, TValue> Consumer { get; }
 

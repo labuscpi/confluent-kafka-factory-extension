@@ -67,7 +67,7 @@ internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHand
     [ExcludeFromCodeCoverage]
     private ConsumerHandle<TKey, TValue> Subscribe()
     {
-        var subscription = CreateSubscription();
+        var subscription = CreateTopics();
 
         var consumerSubscription = Consumer.Subscription;
         if (consumerSubscription == null || !consumerSubscription.Any())
@@ -88,21 +88,21 @@ internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHand
     }
 
     [ExcludeFromCodeCoverage]
-    private List<string> CreateSubscription()
+    public List<string> CreateTopics()
     {
-        var subscriptions = string.IsNullOrWhiteSpace(Separator)
+        var topics = string.IsNullOrWhiteSpace(Separator)
             ? new List<string> { Topic }
             : Topic
                 .Split(Separator, StringSplitOptions.RemoveEmptyEntries)
                 .Distinct(_stringComparer)
                 .ToList();
 
-        if (subscriptions == null || !subscriptions.Any())
+        if (topics == null || !topics.Any())
             throw new ArgumentNullException(nameof(Topic));
 
-        subscriptions.Sort(_stringComparer);
+        topics.Sort(_stringComparer);
 
-        return subscriptions;
+        return topics;
     }
 
     [ExcludeFromCodeCoverage]
