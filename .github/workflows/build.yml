@@ -28,3 +28,4 @@ jobs:
         run: dotnet build confluent-kafka-factory-extension.sln --configuration Release --no-restore --verbosity minimal
       - name: Test
         run: dotnet test confluent-kafka-factory-extension.sln --configuration Release --no-build --verbosity minimal
+
