@@ -12,19 +12,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="2.1.0" />
-        <PackageReference Include="FluentValidation" Version="11.5.2" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
+        <PackageReference Include="Confluent.Kafka" Version="2.1.0"/>
+        <PackageReference Include="FluentValidation" Version="11.5.2"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Include="..\..\LICENSE">
-        <Pack>True</Pack>
-        <PackagePath />
-      </None>
+        <None Include="..\..\LICENSE">
+            <Pack>True</Pack>
+            <PackagePath/>
+        </None>
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath/>
+        </None>
     </ItemGroup>
 
 </Project>
