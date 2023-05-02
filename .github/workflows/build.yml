@@ -2,9 +2,9 @@ name: Build & Test
 
 on:
   push:
-    branches: [ main, netcoreapp3.1 ]
+    branches: [ main, net6.0 ]
   pull_request:
-    branches: [ main, netcoreapp3.1 ]
+    branches: [ main, net6.0 ]
 
 jobs:
   build:
@@ -14,10 +14,12 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET Core 6.0.x
+      - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version:  |
+            6.0.x
+            7.0.x
       - name: Restore
         run: dotnet restore confluent-kafka-factory-extension.sln --verbosity minimal --force
       - name: Build

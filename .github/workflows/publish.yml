@@ -12,10 +12,12 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: true
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET Core 6.0.x
+      - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: |
+            6.0.x
+            7.0.x
       - name: Restore
         run: dotnet restore confluent-kafka-factory-extension.sln --verbosity minimal --force
       - name: Build
@@ -24,4 +26,4 @@ jobs:
         run: dotnet pack Confluent.Kafka.FactoryExtensions.csproj --configuration Release --no-build --verbosity minimal /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/releases/tag/${{ github.event.release.tag_name }}"
         working-directory: src/Confluent.Kafka.FactoryExtensions
       - name: Publish Package to nuget.org
-        run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGETAPIKEY }} --source https://api.nuget.org/v3/index.json --no-symbols true --skip-duplicate
+        run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGETAPIKEY }} --source https://api.nuget.org/v3/index.json --no-symbols --skip-duplicate
