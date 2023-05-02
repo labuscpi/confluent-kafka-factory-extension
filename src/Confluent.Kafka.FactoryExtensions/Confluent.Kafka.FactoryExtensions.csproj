@@ -7,6 +7,7 @@
         <RepositoryUrl>https://github.com/labuscpi/confluent-kafka-factory-extension</RepositoryUrl>
         <PackageProjectUrl>https://github.com/users/labuscpi/projects/1</PackageProjectUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <LangVersion>latest</LangVersion>
         <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
