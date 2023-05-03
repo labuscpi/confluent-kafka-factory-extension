@@ -18,23 +18,21 @@
 
 using System;
 using System.Threading;
+using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
 using Consumer.Example.WorkerService.Consumers.Common;
+using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Consumer.Example.WorkerService.Consumers
 {
-    public class ExampleOne : ProjectBackgroundService
+    public class ExampleOne : ProjectBackgroundService<long, string>
     {
-        private readonly IConsumerFactory _factory;
         private readonly ILogger<ExampleOne> _logger;
 
-        public ExampleOne(IConsumerFactory factory, ILogger<ExampleOne> logger) : base("Constellation", logger)
+        public ExampleOne(IConsumerFactory factory, ILogger<ExampleOne> logger) : base(factory, "Constellation", logger)
         {
-            _factory = factory;
             _logger = logger;
-
-            SetupConsumer();
         }
 
         protected override void StartConsumerLoop(CancellationToken cancellationToken)
@@ -43,7 +41,7 @@ namespace Consumer.Example.WorkerService.Consumers
             {
                 try
                 {
-                    var cr = _factory.Create<long, string>(ConsumerName).Consume(cancellationToken);
+                    var cr = Handle.Consume(cancellationToken);
 
                     HandleMessage(cr.Message);
                 }
@@ -58,22 +56,16 @@ namespace Consumer.Example.WorkerService.Consumers
             }
         }
 
-        /// <summary>
-        ///  Create handle on name registered in Configuration, case sensitive
-        /// Available Handler
-        /// SetStatisticsHandler()
-        /// SetOffsetsCommittedHandler()
-        /// SetPartitionsAssignedHandler()
-        /// SetPartitionsRevokedHandler()
-        /// SetOAuthBearerTokenRefreshHandler()
-        ///
-        /// Available Key and Value Deserializer Setup
-        /// SetKeyDeserializer()
-        /// SetValueDeserializer()
-        /// </summary>
-        private void SetupConsumer()
-            => _factory.Create<long, string>(ConsumerName).Builder
-                .SetErrorHandler((_, error) => { _logger.LogDebug("{Reason}", error.Reason); })
-                .SetLogHandler((_, message) => { _logger.LogDebug("{Message}", message.Message); });
+        private void HandleMessage(Message<long, string> message)
+        {
+            try
+            {
+                _logger.LogInformation("{Key}: {Value}", message.Key, message.Value ?? message.Value.SerializeObject());
+            }
+            catch (Exception e)
+            {
+                LogException(e);
+            }
+        }
     }
 }

@@ -20,32 +20,26 @@ using System;
 using System.Threading;
 using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
-using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
 using Consumer.Example.WorkerService.Consumers.Common;
 using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace Consumer.Example.WorkerService.Consumers
 {
-    public class ExampleTwo<TKey, TValue> : ProjectBackgroundService
+    public class ExampleTwo<TKey, TValue> : ProjectBackgroundService<TKey, TValue>
     {
-        private readonly IConsumerHandle<TKey, TValue> _handle;
         private readonly ILogger<ExampleTwo<TKey, TValue>> _logger;
 
-        public ExampleTwo(IConsumerFactory factory, ILogger<ExampleTwo<TKey, TValue>> logger) : base("Constellation", logger)
+        public ExampleTwo(IConsumerFactory factory, ILogger<ExampleTwo<TKey, TValue>> logger) : base(factory, "Constellation", logger)
         {
-            _handle = factory.Create<TKey, TValue>(ConsumerName);
             _logger = logger;
         }
 
         protected override void StartConsumerLoop(CancellationToken cancellationToken)
         {
-            using var consumer = _handle.Builder
-                .SetErrorHandler(ErrorHandler())
-                .SetLogHandler(LogHandler())
-                .Build();
+            using var consumer = Handle.Builder.Build();
 
-            consumer.Subscribe(_handle.CreateTopics());
+            consumer.Subscribe(Handle.CreateTopics());
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -66,17 +60,19 @@ namespace Consumer.Example.WorkerService.Consumers
             }
         }
 
-        private Action<IConsumer<TKey, TValue>, Error> ErrorHandler()
-            => (_, error) =>
+        private void HandleMessage(Message<TKey, TValue> message)
+        {
+            try
             {
-                var e = new KafkaException(error);
+                if (message.Value is string)
+                    _logger.LogInformation("{Key}: {Value}", message.Key, message.Value);
+                else
+                    _logger.LogInformation("{Key}: {Value}", message.Key, message.Value.SerializeObject());
+            }
+            catch (Exception e)
+            {
                 LogException(e);
-            };
-
-        private Action<IConsumer<TKey, TValue>, LogMessage> LogHandler()
-            => (_, logMessage) =>
-            {
-                _logger.LogInformation("{Message}", logMessage.Message);
-            };
+            }
+        }
     }
 }

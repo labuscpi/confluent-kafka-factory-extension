@@ -16,22 +16,57 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
+using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
 using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Consumer.Example.WorkerService.Consumers.Common;
 
-public abstract class ProjectBackgroundService : BackgroundService
+public abstract class ProjectBackgroundService<TKey, TValue> : BackgroundService
 {
-    protected readonly string ConsumerName;
+    protected readonly IConsumerHandle<TKey, TValue> Handle;
     private readonly ILogger _logger;
 
-    protected ProjectBackgroundService(string consumerName, ILogger logger)
+    protected ProjectBackgroundService(IConsumerFactory factory, string consumerName, ILogger logger)
     {
-        ConsumerName = consumerName;
+        Handle = factory.Create<TKey, TValue>(consumerName);
         _logger = logger;
+
+        SetupConsumer();
     }
+
+    /// <summary>
+    ///  Create handle on name registered in Configuration, case sensitive
+    /// Available Handler
+    /// SetStatisticsHandler()
+    /// SetOffsetsCommittedHandler()
+    /// SetPartitionsAssignedHandler()
+    /// SetPartitionsRevokedHandler()
+    /// SetOAuthBearerTokenRefreshHandler()
+    ///
+    /// Available Key and Value Deserializer Setup
+    /// SetKeyDeserializer()
+    /// SetValueDeserializer()
+    /// </summary>
+    private void SetupConsumer()
+        => Handle.Builder
+            .SetErrorHandler(ErrorHandler())
+            .SetLogHandler(LogHandler());
+
+    private Action<IConsumer<TKey, TValue>, Error> ErrorHandler()
+        => (_, error) =>
+        {
+            var e = new KafkaException(error);
+            LogException(e);
+        };
+
+    private Action<IConsumer<TKey, TValue>, LogMessage> LogHandler()
+        => (_, logMessage) =>
+        {
+            _logger.LogInformation("{Message}", logMessage.Message);
+        };
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -41,21 +76,6 @@ public abstract class ProjectBackgroundService : BackgroundService
     }
 
     protected abstract void StartConsumerLoop(CancellationToken cancellationToken);
-
-    protected void HandleMessage<TKey, TValue>(Message<TKey, TValue> message)
-    {
-        try
-        {
-            if (message.Value is string)
-                _logger.LogInformation("{Key}: {Value}", message.Key, message.Value);
-            else
-                _logger.LogInformation("{Key}: {Value}", message.Key, message.Value.SerializeObject());
-        }
-        catch (Exception e)
-        {
-            LogException(e);
-        }
-    }
 
     protected void LogException(Exception e)
         => _logger.LogError(e, "{Message}", e.Message);
