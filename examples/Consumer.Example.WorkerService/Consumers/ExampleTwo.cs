@@ -17,38 +17,28 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
+using Consumer.Example.WorkerService.Consumers.Common;
 using FactoryExtension.Example.Common.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Consumer.Example.WorkerService.Consumers
 {
-    public class Qualification<TKey, TValue> : BackgroundService
+    public class ExampleTwo<TKey, TValue> : ProjectBackgroundService
     {
         private readonly IConsumerHandle<TKey, TValue> _handle;
-        private readonly ILogger<Qualification<TKey, TValue>> _logger;
+        private readonly ILogger<ExampleTwo<TKey, TValue>> _logger;
 
-        public Qualification(IConsumerFactory factory, ILogger<Qualification<TKey, TValue>> logger)
+        public ExampleTwo(IConsumerFactory factory, ILogger<ExampleTwo<TKey, TValue>> logger) : base("Constellation", logger)
         {
-            _handle = factory.Create<TKey, TValue>(nameof(Qualification<TKey, TValue>));
+            _handle = factory.Create<TKey, TValue>(ConsumerName);
             _logger = logger;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            new Thread(() => StartConsumerLoop(stoppingToken)).Start();
-
-            return Task.CompletedTask;
-        }
-
-        private void StartConsumerLoop(CancellationToken cancellationToken)
+        protected override void StartConsumerLoop(CancellationToken cancellationToken)
         {
             using var consumer = _handle.Builder
                 .SetErrorHandler(ErrorHandler())
@@ -62,7 +52,8 @@ namespace Consumer.Example.WorkerService.Consumers
                 try
                 {
                     var cr = consumer.Consume(cancellationToken);
-                    _logger.LogInformation("{Key}: {Value}", cr.Message.Key, cr.Message.Value);
+
+                    HandleMessage(cr.Message);
                 }
                 catch (OperationCanceledException)
                 {
@@ -70,43 +61,22 @@ namespace Consumer.Example.WorkerService.Consumers
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Unexpected error: {Message}", e.GetMessage());
+                    LogException(e);
                 }
             }
         }
 
         private Action<IConsumer<TKey, TValue>, Error> ErrorHandler()
-            => (_, e) =>
+            => (_, error) =>
             {
-                var ex = new KafkaException(e);
-                _logger.LogError(ex, "{Message}",ex.Message);
+                var e = new KafkaException(error);
+                LogException(e);
             };
 
         private Action<IConsumer<TKey, TValue>, LogMessage> LogHandler()
             => (_, logMessage) =>
             {
-                _logger.LogInformation("{@Message}", logMessage);
+                _logger.LogInformation("{Message}", logMessage.Message);
             };
-
-        private IEnumerable<string> Topics()
-            => string.IsNullOrWhiteSpace(_handle.Separator)
-                ? new List<string> {_handle.Topic}
-                : _handle.Topic
-                    .Split(_handle.Separator, StringSplitOptions.RemoveEmptyEntries)
-                    .Distinct(StringComparer.Ordinal)
-                    .ToList();
-
-        // Optional builder customization
-        private IConsumer<TKey, TValue> BuildConsumer()
-            => _handle.Builder
-                .SetErrorHandler((_, error) =>
-                {
-                    _logger.LogDebug("{Reason}", error.Reason);
-                })
-                .SetLogHandler((_, message) =>
-                {
-                    _logger.LogDebug("{Message}", message.Message);
-                })
-                .Build();
     }
 }

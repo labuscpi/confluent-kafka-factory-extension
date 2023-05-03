@@ -1,5 +1,4 @@
 using System.Linq;
-using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Extensions;
 using Confluent.Kafka.FactoryExtensions.Models;
 using FactoryExtension.Example.Utilities.Interfaces;
@@ -21,7 +20,7 @@ foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
 // Add services to the container.
 var kafkaSettings = webBuilder.Configuration.GetSection(KafkaSettings.Key);
 webBuilder.Services.TryAddKafkaFactories(kafkaSettings);
-webBuilder.Services.TryAddSingleton<IProduceHelper<Null, string>, ProduceHelper<Null, string>>();
+webBuilder.Services.TryAddSingleton<IProduceHelper<long, string>, ProduceHelper<long, string>>();
 
 webBuilder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

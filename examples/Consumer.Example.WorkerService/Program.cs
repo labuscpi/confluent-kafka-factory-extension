@@ -46,8 +46,8 @@ namespace Consumer.Example.WorkerService
                     var configuration = hostContext.Configuration.GetSection(KafkaSettings.Key);
                     services.TryAddKafkaFactories(configuration);
 
-                    services.AddHostedService<Constellation>();
-                    // services.AddHostedService<Qualification<string, string>>();
+                    // services.AddHostedService<ExampleOne>();
+                    services.AddHostedService<ExampleTwo<long, string>>();
                 });
     }
 }

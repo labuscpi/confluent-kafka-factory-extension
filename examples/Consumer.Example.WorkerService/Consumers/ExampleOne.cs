@@ -18,21 +18,18 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
-using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
-using Microsoft.Extensions.Hosting;
+using Consumer.Example.WorkerService.Consumers.Common;
 using Microsoft.Extensions.Logging;
 
 namespace Consumer.Example.WorkerService.Consumers
 {
-    public class Constellation : BackgroundService
+    public class ExampleOne : ProjectBackgroundService
     {
-        private const string ConsumerName = "Constellation";
         private readonly IConsumerFactory _factory;
-        private readonly ILogger<Constellation> _logger;
+        private readonly ILogger<ExampleOne> _logger;
 
-        public Constellation(IConsumerFactory factory, ILogger<Constellation> logger)
+        public ExampleOne(IConsumerFactory factory, ILogger<ExampleOne> logger) : base("Constellation", logger)
         {
             _factory = factory;
             _logger = logger;
@@ -40,21 +37,15 @@ namespace Consumer.Example.WorkerService.Consumers
             SetupConsumer();
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            new Thread(() => StartConsumerLoop(stoppingToken)).Start();
-
-            return Task.CompletedTask;
-        }
-
-        private void StartConsumerLoop(CancellationToken cancellationToken)
+        protected override void StartConsumerLoop(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    var cr = _factory.Create<Null, string>(ConsumerName).Consume(cancellationToken);
-                    _logger.LogInformation("Value: {Value}", cr.Message.Value);
+                    var cr = _factory.Create<long, string>(ConsumerName).Consume(cancellationToken);
+
+                    HandleMessage(cr.Message);
                 }
                 catch (OperationCanceledException)
                 {
@@ -62,7 +53,7 @@ namespace Consumer.Example.WorkerService.Consumers
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Unexpected error: {Message}", e.Message);
+                    LogException(e);
                 }
             }
         }
@@ -81,15 +72,8 @@ namespace Consumer.Example.WorkerService.Consumers
         /// SetValueDeserializer()
         /// </summary>
         private void SetupConsumer()
-            => _factory.Create<Null, string>(ConsumerName).Builder
-                .SetErrorHandler((_, error) =>
-                {
-                    _logger.LogDebug("{Reason}", error.Reason);
-                })
-                .SetLogHandler((_, message) =>
-                {
-                    _logger.LogDebug("{Message}", message.Message);
-                });
-
+            => _factory.Create<long, string>(ConsumerName).Builder
+                .SetErrorHandler((_, error) => { _logger.LogDebug("{Reason}", error.Reason); })
+                .SetLogHandler((_, message) => { _logger.LogDebug("{Message}", message.Message); });
     }
 }

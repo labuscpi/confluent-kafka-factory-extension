@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Confluent.Kafka;
 using FactoryExtension.Example.Abstractions.Models;
 using FactoryExtension.Example.Common.Extensions;
 using FactoryExtension.Example.Utilities.Interfaces;
@@ -14,10 +13,10 @@ namespace Producer.Example.Api.Controllers;
 
 public class WeatherForecastController : ProjectControllerBase
 {
-    private readonly IProduceHelper<Null, string> _produceHelper;
+    private readonly IProduceHelper<long, string> _produceHelper;
     private readonly ILogger<WeatherForecastController> _logger;
 
-    public WeatherForecastController(IProduceHelper<Null, string> produceHelper, ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(IProduceHelper<long, string> produceHelper, ILogger<WeatherForecastController> logger)
     {
         _produceHelper = produceHelper;
         _logger = logger;
@@ -28,9 +27,9 @@ public class WeatherForecastController : ProjectControllerBase
     {
         try
         {
-            var forecast = GetWeatherForecast().SerializeObject();
-
-            var result = await _produceHelper.SendMessageAsync(forecast);
+            var key = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var value = GetWeatherForecast().SerializeObject();
+            var result = await _produceHelper.SendMessageAsync(key, value);
 
             return new ObjectResult(result);
         }
