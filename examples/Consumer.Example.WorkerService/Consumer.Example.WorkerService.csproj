@@ -14,9 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Secrets.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <None Include=".config\secrets.json" />
     </ItemGroup>
 

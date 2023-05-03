@@ -18,9 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Include=".config\secrets.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+      <None Include=".config\secrets.json" />
     </ItemGroup>
 
 </Project>
