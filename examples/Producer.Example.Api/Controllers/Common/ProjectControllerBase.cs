@@ -1,4 +1,4 @@
-// Copyright 2021. labuscpi
+// Copyright 2023. labuscpi
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using Confluent.Kafka;
+using Microsoft.AspNetCore.Mvc;
 
-namespace FactoryExtension.Example.Utilities.Interfaces
+namespace Producer.Example.Api.Controllers.Common;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProjectControllerBase
 {
-    public interface IProduceHelper<TKey, TValue>
-    {
-        Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value);
-        Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value);
-    }
+
 }

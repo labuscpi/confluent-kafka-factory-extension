@@ -29,7 +29,7 @@ Take a look in the [examples](examples) directory for example usage.
 
 ```json
 {
-  "KafkaSettings": {
+  "Kafka": {
     "Consumers": {
       "Constellation": {
         "Topic": "EVENTHUB",
@@ -68,15 +68,15 @@ Take a look in the [examples](examples) directory for example usage.
 }
 
 ```
-> **_Important:_**  Replace {YOUR.EVENTHUBS.CONNECTION.STRING} with the connection string for your Event Hubs namespace. 
-> For instructions on getting the connection string, 
-> see [Get an Event Hubs connection string](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-get-connection-string). 
-> Here's an example configuration: 
+> **_Important:_**  Replace {YOUR.EVENTHUBS.CONNECTION.STRING} with the connection string for your Event Hubs namespace.
+> For instructions on getting the connection string,
+> see [Get an Event Hubs connection string](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-get-connection-string).
+> Here's an example configuration:
 > "SaslPassword" : "Endpoint=sb://mynamespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=XXXXXXXXXXXXXXXX";
 
 #### DI Configuration
-Add all .json settings files to *IConfigurationBuilder*, 
-get configuration section `var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));`
+Add all .json settings files to *IConfigurationBuilder*,
+get configuration section `var configuration = hostContext.Configuration.GetSection(nameof(Kafka));`
 and register the client factories in DI with `services.TryAddKafkaFactories(configuration);`
 ```c#
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -91,7 +91,7 @@ and register the client factories in DI with `services.TryAddKafkaFactories(conf
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));
+                    var configuration = hostContext.Configuration.GetSection(nameof(Kafka));
                     services.TryAddKafkaFactories(configuration);
 
                     services.AddHostedService<Constellation>();
@@ -122,14 +122,14 @@ Construct the `ICosumerHandle<TKey, TValue>` from the factory `var handle = _fac
             handle.Builder
                 .SetErrorHandler((_, error) => { Log(LogLevel.Error, error.Reason); })
                 .SetLogHandler((_, message) => { Log(LogLevel.Information, message.Message); });
-                
+
             // Available Handler
             // SetStatisticsHandler()
             // SetOffsetsCommittedHandler()
             // SetPartitionsAssignedHandler()
             // SetPartitionsRevokedHandler()
             // SetOAuthBearerTokenRefreshHandler()
-            
+
             // Available Key and Value Deserializer Setup
             // SetKeyDeserializer()
             // SetValueDeserializer()
@@ -138,7 +138,7 @@ Construct the `ICosumerHandle<TKey, TValue>` from the factory `var handle = _fac
         }
 ```
 > **_Note:_** A `CustomConsumerBuilder` object is instantiated. Both Handler Actions
-> and Key/Value Deserializer Setup is available. 
+> and Key/Value Deserializer Setup is available.
 
 ```c#
         protected override Task ExecuteAsync(CancellationToken stoppingToken)

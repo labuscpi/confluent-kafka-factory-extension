@@ -1,38 +1,52 @@
-using System;
 using System.Linq;
-using Microsoft.AspNetCore.Hosting;
+using Confluent.Kafka;
+using Confluent.Kafka.FactoryExtensions.Extensions;
+using Confluent.Kafka.FactoryExtensions.Models;
+using FactoryExtension.Example.Utilities.Interfaces;
+using FactoryExtension.Example.Utilities.Kafka;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
-namespace Producer.Example.Api
+var webBuilder = WebApplication.CreateBuilder(args);
+
+var subPath = webBuilder.Configuration.GetValue<string>("CONFIG_SUB_PATH");
+var directoryContents = webBuilder.Environment.ContentRootFileProvider.GetDirectoryContents(subPath);
+foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
+    webBuilder.Configuration.AddJsonFile(file.PhysicalPath!, true, false);
+
+// Add services to the container.
+var kafkaSettings = webBuilder.Configuration.GetSection(KafkaSettings.Key);
+webBuilder.Services.TryAddKafkaFactories(kafkaSettings);
+webBuilder.Services.TryAddSingleton<IProduceHelper<Null, string>, ProduceHelper<Null, string>>();
+
+webBuilder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+webBuilder.Services.AddEndpointsApiExplorer();
+webBuilder.Services.AddSwaggerGen(c =>
 {
-    public class Program
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
-        public static void Main(string[] args)
-        {
-            try
-            {
-                CreateHostBuilder(args).Build().Run();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
+        Title = "Producer.Example.Api",
+        Version = "v1"
+    });
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, builder) =>
-                {
-                    var configuration = builder.Build();
-                    var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
-                    var directoryContents = context.HostingEnvironment.ContentRootFileProvider.GetDirectoryContents(configSubPath);
-                    foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
-                        builder.AddJsonFile(file.PhysicalPath, true, false);
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+var app = webBuilder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+    app.UseDeveloperExceptionPage();
+
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Producer.Example.Api v1"));
+
+// app.UseHttpsRedirection();
+// app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

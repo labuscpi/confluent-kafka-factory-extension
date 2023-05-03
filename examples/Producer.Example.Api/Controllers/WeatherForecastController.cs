@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,58 +8,56 @@ using FactoryExtension.Example.Common.Extensions;
 using FactoryExtension.Example.Utilities.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Producer.Example.Api.Controllers.Common;
 
-namespace Producer.Example.Api.Controllers
+namespace Producer.Example.Api.Controllers;
+
+public class WeatherForecastController : ProjectControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    private readonly IProduceHelper<Null, string> _produceHelper;
+    private readonly ILogger<WeatherForecastController> _logger;
+
+    public WeatherForecastController(IProduceHelper<Null, string> produceHelper, ILogger<WeatherForecastController> logger)
     {
-        private readonly IProduceHelper<Null, string> _produceHelper;
-        private readonly ILogger<WeatherForecastController> _logger;
+        _produceHelper = produceHelper;
+        _logger = logger;
+    }
 
-        public WeatherForecastController(IProduceHelper<Null, string> produceHelper, ILogger<WeatherForecastController> logger)
+    [HttpGet]
+    public async Task<ActionResult> GetWeatherForecastAsync()
+    {
+        try
         {
-            _produceHelper = produceHelper;
-            _logger = logger;
+            var forecast = GetWeatherForecast().SerializeObject();
+
+            var result = await _produceHelper.SendMessageAsync(forecast);
+
+            return new ObjectResult(result);
         }
-
-        [HttpGet]
-        public async Task<ActionResult> GetWeatherForecastAsync()
+        catch (Exception e)
         {
-            try
+            _logger.LogError(e, "[Unexpected error::{Message}]", e.GetMessage());
+
+            return new BadRequestObjectResult(new
             {
-                var forecast = GetWeatherForecast().SerializeObject();
-                
-                var result = await _produceHelper.SendMessageAsync(forecast);
+                Message = e.GetMessage(),
+                e.StackTrace
+            });
+        }
+    }
 
-                return new ObjectResult(result);
-            }
-            catch (Exception e)
+    private static IEnumerable<WeatherForecast> GetWeatherForecast()
+    {
+        var rng = new Random();
+
+        return Enumerable
+            .Range(1, 5)
+            .Select(index => new WeatherForecast
             {
-                _logger.LogError(e, "[Unexpected error::{NewLine}{Message}]", Environment.NewLine, e.GetMessage());
-
-                return new BadRequestObjectResult(new
-                {
-                    Message = e.GetMessage(),
-                    e.StackTrace
-                });
-            }
-        }
-
-        private static IEnumerable<WeatherForecast> GetWeatherForecast()
-        {
-            var rng = new Random();
-
-            return Enumerable
-                .Range(1, 5)
-                .Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = WeatherForecast.Summaries[rng.Next(WeatherForecast.Summaries.Length)]
-                })
-                .ToList();
-        }
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = WeatherForecast.Summaries[rng.Next(WeatherForecast.Summaries.Length)]
+            })
+            .ToList();
     }
 }

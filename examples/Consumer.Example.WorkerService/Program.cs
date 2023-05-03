@@ -1,13 +1,13 @@
 #region Copyright
 
 // Copyright 2021. labuscpi
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,14 +39,14 @@ namespace Consumer.Example.WorkerService
                     var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
                     var directoryContents = context.HostingEnvironment.ContentRootFileProvider.GetDirectoryContents(configSubPath);
                     foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
-                        builder.AddJsonFile(file.PhysicalPath, true, false);
+                        builder.AddJsonFile(file.PhysicalPath!, true, false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));
+                    var configuration = hostContext.Configuration.GetSection(KafkaSettings.Key);
                     services.TryAddKafkaFactories(configuration);
 
-                    services.AddHostedService<Constellation<string, string>>();
+                    services.AddHostedService<Constellation>();
                     // services.AddHostedService<Qualification<string, string>>();
                 });
     }

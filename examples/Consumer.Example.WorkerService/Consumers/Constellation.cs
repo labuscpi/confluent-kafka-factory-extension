@@ -1,13 +1,13 @@
 #region Copyright
 
 // Copyright 2021. labuscpi
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,20 +19,20 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
-using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Consumer.Example.WorkerService.Consumers
 {
-    public class Constellation<TKey, TValue> : BackgroundService
+    public class Constellation : BackgroundService
     {
         private const string ConsumerName = "Constellation";
         private readonly IConsumerFactory _factory;
-        private readonly ILogger<Constellation<TKey, TValue>> _logger;
+        private readonly ILogger<Constellation> _logger;
 
-        public Constellation(IConsumerFactory factory, ILogger<Constellation<TKey, TValue>> logger)
+        public Constellation(IConsumerFactory factory, ILogger<Constellation> logger)
         {
             _factory = factory;
             _logger = logger;
@@ -53,8 +53,8 @@ namespace Consumer.Example.WorkerService.Consumers
             {
                 try
                 {
-                    var cr = _factory.Create<TKey, TValue>(ConsumerName).Consumer.Consume(cancellationToken);
-                    _logger.LogInformation("{Key}: {Value}", cr.Message.Key, cr.Message.Value);
+                    var cr = _factory.Create<Null, string>(ConsumerName).Consume(cancellationToken);
+                    _logger.LogInformation("Value: {Value}", cr.Message.Value);
                 }
                 catch (OperationCanceledException)
                 {
@@ -69,19 +69,19 @@ namespace Consumer.Example.WorkerService.Consumers
 
         /// <summary>
         ///  Create handle on name registered in Configuration, case sensitive
-        /// Available Handler                         
-        /// SetStatisticsHandler()                    
-        /// SetOffsetsCommittedHandler()              
-        /// SetPartitionsAssignedHandler()            
-        /// SetPartitionsRevokedHandler()             
-        /// SetOAuthBearerTokenRefreshHandler()       
-        ///                                  
+        /// Available Handler
+        /// SetStatisticsHandler()
+        /// SetOffsetsCommittedHandler()
+        /// SetPartitionsAssignedHandler()
+        /// SetPartitionsRevokedHandler()
+        /// SetOAuthBearerTokenRefreshHandler()
+        ///
         /// Available Key and Value Deserializer Setup
-        /// SetKeyDeserializer()                      
-        /// SetValueDeserializer()     
+        /// SetKeyDeserializer()
+        /// SetValueDeserializer()
         /// </summary>
         private void SetupConsumer()
-            => _factory.Create<TKey, TValue>(ConsumerName).Builder
+            => _factory.Create<Null, string>(ConsumerName).Builder
                 .SetErrorHandler((_, error) =>
                 {
                     _logger.LogDebug("{Reason}", error.Reason);
