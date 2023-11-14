@@ -1,13 +1,13 @@
 #region Copyright
 
 // Copyright 2021. labuscpi
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ namespace FactoryExtension.Example.Utilities.Kafka
     public class ProduceHelper<TKey, TValue> : IProduceHelper<TKey, TValue>
     {
         private const string ProducerName = "Contradiction";
-        
+
         private readonly IProducerFactory _factory;
         private readonly ILogger<ProduceHelper<TKey, TValue>> _logger;
 
@@ -35,7 +35,7 @@ namespace FactoryExtension.Example.Utilities.Kafka
         {
             _factory = factory;
             _logger = logger;
-            
+
             ConfigureHandle();
         }
 
@@ -59,10 +59,10 @@ namespace FactoryExtension.Example.Utilities.Kafka
 
             return Produce(message);
         }
-        
+
         private Task<DeliveryResult<TKey, TValue>> Produce(Message<TKey, TValue> message)
             => _factory.Create<TKey, TValue>(ProducerName).ProduceAsync(message);
-        
+
         private void ConfigureHandle()
             => _factory.Create<TKey, TValue>(ProducerName)
                 .Builder

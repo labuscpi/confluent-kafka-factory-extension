@@ -20,7 +20,7 @@ namespace Service.HttpClient
             {
                 if (!int.TryParse(args.FirstOrDefault(), out _upper))
                     _upper = 5;
-                
+
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception e)
@@ -42,7 +42,7 @@ namespace Service.HttpClient
                 .ConfigureServices((hostContext, services) =>
                 {
                     var configuration = hostContext.Configuration;
-                    
+
                     var settings = configuration.GetSection(nameof(ServicesSettings)).Get<ServicesSettings>();
                     settings.WorkerService.Upper = _upper;
                     services.TryAddSingleton<IServicesSettings>(settings);

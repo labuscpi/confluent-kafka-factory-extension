@@ -1,13 +1,13 @@
 ﻿#region Copyright
 
 // Copyright 2021. labuscpi
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using Confluent.Kafka.FactoryExtensions.Models.Settings.Clients;
 
@@ -23,6 +24,11 @@ namespace Confluent.Kafka.FactoryExtensions.Models;
 
 public sealed class KafkaSettings
 {
+    private static string SectionKey =>
+        nameof(KafkaSettings).Replace("Settings", "", StringComparison.CurrentCultureIgnoreCase);
+
+    public static string Key => SectionKey;
+
     public Dictionary<string, ConsumerSettings> Consumers { get; set; }
     public Dictionary<string, ProducerSettings> Producers { get; set; }
 }

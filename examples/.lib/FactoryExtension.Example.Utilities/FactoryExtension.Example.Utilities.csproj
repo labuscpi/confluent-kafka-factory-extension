@@ -6,11 +6,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Extensions" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Confluent.Kafka.FactoryExtensions\Confluent.Kafka.FactoryExtensions.csproj" />
+        <Folder Include="Extensions"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\src\Confluent.Kafka.FactoryExtensions\Confluent.Kafka.FactoryExtensions.csproj"/>
     </ItemGroup>
 
 </Project>

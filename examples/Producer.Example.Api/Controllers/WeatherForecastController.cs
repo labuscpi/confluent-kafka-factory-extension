@@ -30,7 +30,7 @@ namespace Producer.Example.Api.Controllers
             try
             {
                 var forecast = GetWeatherForecast().SerializeObject();
-                
+
                 var result = await _produceHelper.SendMessageAsync(forecast);
 
                 return new ObjectResult(result);

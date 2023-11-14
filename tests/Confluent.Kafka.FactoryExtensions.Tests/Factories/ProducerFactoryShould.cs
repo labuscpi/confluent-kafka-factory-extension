@@ -1,12 +1,12 @@
 #region Copyright
 // Copyright 2020. labuscpi
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ namespace Confluent.Kafka.FactoryExtensions.Tests.Factories
     public class ProducerFactoryShould : FactoryBase<ProducerSettings>
     {
         private ProducerFactory _sut;
-        
+
         [SetUp]
         public void Setup()
             => _sut = new ProducerFactory(Monitor);
@@ -39,7 +39,7 @@ namespace Confluent.Kafka.FactoryExtensions.Tests.Factories
         public void NameIsNullOrWhiteSpace_ThrowArgumentNullException(string name)
             => Assert.That(() => _sut.Create<string, string>(name), Throws.InstanceOf<ArgumentNullException>()
                 .With.Property("ParamName").EqualTo("name"));
-        
+
         [Test]
         public void CreatHandle_WithValidName_ReturnsInstanceOfProducerHandle()
         {
@@ -50,7 +50,7 @@ namespace Confluent.Kafka.FactoryExtensions.Tests.Factories
         [Test]
         public void CreatHandle_InvalidName_ThrowsArgumentNullException()
             => Assert.That(() => _sut.Create<string, string>("random"), Throws.TypeOf<ArgumentNullException>());
-        
+
 
         [Test]
         public void ConsecutiveCreateCalls_WithDifferentName_CreateDifferentHandle()

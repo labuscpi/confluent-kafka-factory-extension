@@ -1,13 +1,13 @@
 #region Copyright
 
 // Copyright 2021. labuscpi
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
-using Confluent.Kafka.FactoryExtensions.Interfaces.Handlers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -69,16 +68,16 @@ namespace Consumer.Example.WorkerService.Consumers
 
         /// <summary>
         ///  Create handle on name registered in Configuration, case sensitive
-        /// Available Handler                         
-        /// SetStatisticsHandler()                    
-        /// SetOffsetsCommittedHandler()              
-        /// SetPartitionsAssignedHandler()            
-        /// SetPartitionsRevokedHandler()             
-        /// SetOAuthBearerTokenRefreshHandler()       
-        ///                                  
+        /// Available Handler
+        /// SetStatisticsHandler()
+        /// SetOffsetsCommittedHandler()
+        /// SetPartitionsAssignedHandler()
+        /// SetPartitionsRevokedHandler()
+        /// SetOAuthBearerTokenRefreshHandler()
+        ///
         /// Available Key and Value Deserializer Setup
-        /// SetKeyDeserializer()                      
-        /// SetValueDeserializer()     
+        /// SetKeyDeserializer()
+        /// SetValueDeserializer()
         /// </summary>
         private void SetupConsumer()
             => _factory.Create<TKey, TValue>(ConsumerName).Builder

@@ -64,7 +64,7 @@ steps:
 #     PathtoPublish: "$(Build.ArtifactStagingDirectory)/CodeAnalysisLogs"
 #     ArtifactName: "CodeAnalysisLogs"
 #     publishLocation: "Container"
-  
+
 # - task: DotNetCoreCLI@2
 #   inputs:
 #     command: 'restore'
@@ -76,4 +76,3 @@ steps:
 #     command: 'build'
 #     projects: '**/*.csproj'
 #     arguments: '--configuration $(BuildConfiguration)'
-
