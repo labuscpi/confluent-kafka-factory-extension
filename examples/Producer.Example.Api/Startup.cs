@@ -1,6 +1,5 @@
 using Confluent.Kafka;
 using Confluent.Kafka.FactoryExtensions.Extensions;
-using Confluent.Kafka.FactoryExtensions.Models;
 using FactoryExtension.Example.Utilities.Interfaces;
 using FactoryExtension.Example.Utilities.Kafka;
 using Microsoft.AspNetCore.Builder;
@@ -24,8 +23,7 @@ namespace Producer.Example.Api
         public void ConfigureServices(IServiceCollection services)
         {
 
-            var kafkaSettings = Configuration.GetSection(nameof(KafkaSettings));
-            services.TryAddKafkaFactories(kafkaSettings);
+            services.TryAddKafkaFactories(Configuration);
 
             services.TryAddSingleton<IProduceHelper<Null, string>, ProduceHelper<Null, string>>();
             services.AddControllers();

@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Service.HttpClient.Interfaces.Settings;
+namespace Service.HttpClient.Models.Settings;
 
-namespace Service.HttpClient.Models.Settings
+public class HttpClientSettings
 {
-    public class HttpClientSettings : IHttpClientSettings
-    {
-        public string Protocol { get; set; }
-        public string Host { get; set; }
-        public string Port { get; set; }
-    }
+    public const string Key = "HttpClient";
+
+    public string Protocol { get; set; }
+    public string Host { get; set; }
+    public string Port { get; set; }
 }

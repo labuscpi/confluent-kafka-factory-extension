@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Service.HttpClient.Interfaces.Settings;
+namespace Service.HttpClient.Models.Settings;
 
-namespace Service.HttpClient.Models.Settings
+public class ServicesSettings
 {
-    public class ServicesSettings : IServicesSettings
-    {
-        public WorkerServiceSettings WorkerService { get; set; }
-    }
+    public const string Key = "Services";
+    public WorkerServiceSettings WorkerService { get; set; }
 }

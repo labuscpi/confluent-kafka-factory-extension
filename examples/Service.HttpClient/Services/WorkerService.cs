@@ -7,28 +7,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Service.HttpClient.Interfaces.Settings;
+using Microsoft.Extensions.Options;
+using Service.HttpClient.Models.Settings;
 
 namespace Service.HttpClient.Services
 {
     public class WorkerService : BackgroundService
     {
+        public const string ClientName = "Default";
+
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IWorkerServiceSettings _settings;
+        private readonly WorkerServiceSettings _settings;
         private readonly ILogger<WorkerService> _logger;
 
-        public WorkerService(IHttpClientFactory httpClientFactory, IWorkerServiceSettings settings, ILogger<WorkerService> logger)
+        public WorkerService(IHttpClientFactory httpClientFactory, IOptions<ServicesSettings> options, ILogger<WorkerService> logger)
         {
             _httpClientFactory = httpClientFactory;
-            _settings = settings;
+            _settings = options.Value!.WorkerService;
             _logger = logger;
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            new Thread(async () => await StartLoopAsync(stoppingToken)).Start();
+            new Thread(StartLoop).Start();
 
             return Task.CompletedTask;
+
+            async void StartLoop() => await StartLoopAsync(stoppingToken);
         }
 
         private async Task StartLoopAsync(CancellationToken stoppingToken)
@@ -61,7 +66,7 @@ namespace Service.HttpClient.Services
                 for (var i = 0; i < _settings.Upper; i++)
                 {
                     stoppingToken.ThrowIfCancellationRequested();
-                    list.Add(_httpClientFactory.CreateClient(_settings.HttpClientName).SendAsync(CreateRequestMessage(), stoppingToken));
+                    list.Add(_httpClientFactory.CreateClient(ClientName).SendAsync(CreateRequestMessage(), stoppingToken));
                 }
 
                 var result = await Task.WhenAll(list);
@@ -79,8 +84,7 @@ namespace Service.HttpClient.Services
             }
         }
 
-        private static HttpRequestMessage CreateRequestMessage()
-            => new HttpRequestMessage(HttpMethod.Get, "WeatherForecast");
+        private static HttpRequestMessage CreateRequestMessage() => new(HttpMethod.Get, "WeatherForecast");
 
         private void LogException(Exception e)
             => _logger.LogError(e, "{Message}", e.Message);

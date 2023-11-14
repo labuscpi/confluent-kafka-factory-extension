@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Service.HttpClient.Interfaces.Settings;
+namespace Service.HttpClient.Models.Settings;
 
-namespace Service.HttpClient.Models.Settings
+public class WorkerServiceSettings
 {
-    public class WorkerServiceSettings : IWorkerServiceSettings
-    {
-        public string HttpClientName { get; set; }
-        public int? Upper { get; set; }
-    }
+    public int Upper { get; set; } = 1;
 }

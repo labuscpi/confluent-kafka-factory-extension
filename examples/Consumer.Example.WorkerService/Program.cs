@@ -41,10 +41,9 @@ namespace Consumer.Example.WorkerService
                     foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
                         builder.AddJsonFile(file.PhysicalPath, true, false);
                 })
-                .ConfigureServices((hostContext, services) =>
+                .ConfigureServices((context, services) =>
                 {
-                    var configuration = hostContext.Configuration.GetSection(nameof(KafkaSettings));
-                    services.TryAddKafkaFactories(configuration);
+                    services.TryAddKafkaFactories(context.Configuration);
 
                     services.AddHostedService<Constellation<string, string>>();
                     // services.AddHostedService<Qualification<string, string>>();

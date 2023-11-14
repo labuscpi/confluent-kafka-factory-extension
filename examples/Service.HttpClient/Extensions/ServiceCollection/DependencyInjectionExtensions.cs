@@ -16,22 +16,25 @@ using System;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Service.HttpClient.Interfaces.Settings;
+using Microsoft.Extensions.Options;
 using Service.HttpClient.Models.Settings;
+using Service.HttpClient.Services;
 
 namespace Service.HttpClient.Extensions.ServiceCollection
 {
     public static class DependencyInjectionExtensions
     {
-        public static void AddHttpClient(this IServiceCollection services, string name, IConfiguration configuration)
+        public static void AddHttpClient(this IServiceCollection services, IConfiguration configuration)
         {
-            var settings = configuration.GetSection(nameof(HttpClientSettings)).Get<HttpClientSettings>();
-            services.TryAddSingleton<IHttpClientSettings>(settings);
+            services.Configure<HttpClientSettings>(configuration.GetSection(HttpClientSettings.Key),
+                o => o.BindNonPublicProperties = true);
 
-            var uri = $"{settings.Protocol}://{settings.Host}:{settings.Port}/";
-            services.AddHttpClient(name, c =>
+            services.AddHttpClient(WorkerService.ClientName, (sp, c) =>
             {
+                var settings = sp.GetRequiredService<IOptions<HttpClientSettings>>().Value!;
+
+                var uri = $"{settings.Protocol}://{settings.Host}:{settings.Port}/";
+
                 c.BaseAddress = new Uri(uri, UriKind.Absolute);
                 c.DefaultRequestHeaders.Accept.Clear();
                 c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
