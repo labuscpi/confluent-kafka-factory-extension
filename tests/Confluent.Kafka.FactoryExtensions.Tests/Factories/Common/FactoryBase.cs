@@ -16,6 +16,7 @@
 
 using Confluent.Kafka.FactoryExtensions.Extensions;
 using Confluent.Kafka.FactoryExtensions.Tests.Common;
+using Confluent.Kafka.FactoryExtensions.Tests.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
@@ -30,7 +31,7 @@ namespace Confluent.Kafka.FactoryExtensions.Tests.Factories.Common
         protected void OneTimeSetUp()
         {
             var services = new ServiceCollection();
-            services.TryAddKafkaFactories(Settings);
+            services.TryAddKafkaFactories(TestHelper.GetIConfigurationRoot());
 
             Monitor = services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<T>>();
         }

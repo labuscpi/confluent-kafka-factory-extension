@@ -18,17 +18,18 @@ using System.Linq;
 using Confluent.Kafka.FactoryExtensions.Models;
 using Confluent.Kafka.FactoryExtensions.Models.Settings.Clients;
 using Confluent.Kafka.FactoryExtensions.Tests.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace Confluent.Kafka.FactoryExtensions.Tests.Common
 {
     public abstract class LoadAppSettings<T> where T : class
     {
-        protected readonly KafkaSettings Settings;
+        protected readonly KafkaSettings Settings = new();
         protected readonly string[] Names;
 
         protected LoadAppSettings()
         {
-            Settings = TestHelper.GetKafkaSettings();
+            TestHelper.GetConfigurationSection().Bind(Settings);
             Names = typeof(T) == typeof(ConsumerSettings)
                 ? Settings.Consumers.Keys.ToArray()
                 : Settings.Producers.Keys.ToArray();

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 var webBuilder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,7 @@ var kafkaSettings = webBuilder.Configuration.GetSection(KafkaSettings.Key);
 webBuilder.Services.TryAddKafkaFactories(kafkaSettings);
 webBuilder.Services.TryAddSingleton<IProduceHelper<long, string>, ProduceHelper<long, string>>();
 
-webBuilder.Services.AddControllers();
+webBuilder.Services.AddControllers().AddNewtonsoftJson();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 webBuilder.Services.AddEndpointsApiExplorer();
 webBuilder.Services.AddSwaggerGen(c =>
@@ -32,7 +33,7 @@ webBuilder.Services.AddSwaggerGen(c =>
         Title = "Producer.Example.Api",
         Version = "v1"
     });
-});
+}).AddSwaggerGenNewtonsoftSupport();
 
 var app = webBuilder.Build();
 

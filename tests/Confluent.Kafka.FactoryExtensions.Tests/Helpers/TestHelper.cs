@@ -32,15 +32,19 @@ namespace Confluent.Kafka.FactoryExtensions.Tests.Helpers
                 .AddEnvironmentVariables()
                 .Build();
 
-        public static IConfigurationSection GetConfigurationSection(string key, string outputDirectory = null)
-            => GetIConfigurationRoot(outputDirectory).GetSection(key);
-
-        public static KafkaSettings GetKafkaSettings(string outputDirectory = null)
+        public static IConfigurationSection GetConfigurationSection(string key = null, string outputDirectory = null)
         {
-            var settings = new KafkaSettings();
-            GetConfigurationSection(nameof(KafkaSettings), outputDirectory).Bind(settings);
-            return settings;
+            key ??= KafkaSettings.Key;
+
+            return GetIConfigurationRoot(outputDirectory).GetSection(key);
         }
+
+        // public static KafkaSettings GetKafkaSettings(string outputDirectory = null)
+        // {
+        //     var settings = new KafkaSettings();
+        //     GetConfigurationSection(outputDirectory: outputDirectory).Bind(settings);
+        //     return settings;
+        // }
 
         private static string GetBasePath(string outputDirectory)
             => string.IsNullOrWhiteSpace(outputDirectory) ? OutputPath : Path.Join(OutputPath, outputDirectory);

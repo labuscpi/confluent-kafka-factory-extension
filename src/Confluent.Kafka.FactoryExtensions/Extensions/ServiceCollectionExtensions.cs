@@ -19,25 +19,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Confluent.Kafka.FactoryExtensions.Factories;
 using Confluent.Kafka.FactoryExtensions.Models;
 using Confluent.Kafka.FactoryExtensions.Validators;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Confluent.Kafka.FactoryExtensions.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection TryAddKafkaFactories(this IServiceCollection services, KafkaSettings settings)
+    private static IServiceCollection TryAddKafkaFactories(this IServiceCollection services, KafkaSettings settings)
     {
         if (settings == null || settings.Consumers == null && settings.Producers == null)
             throw new ArgumentNullException(nameof(settings));
 
         new ClientSettingsValidator().ValidateAndThrow(settings);
 
-        services.TryAddSingleton(settings);
+        services.TryAddSingleton(sp => sp.GetRequiredService<IOptions<KafkaSettings>>().Value);
 
         if (settings.Consumers != null)
             services.AddConsumerFactory(settings.Consumers);
@@ -48,16 +50,17 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection TryAddKafkaFactories(this IServiceCollection services, IConfiguration configuration)
-        => services.TryAddKafkaFactories(configuration.GetChildren());
+    public static IServiceCollection TryAddKafkaFactories(this IServiceCollection services, IConfiguration configuration, string key = null)
+    {
+        key ??= KafkaSettings.Key;
+
+        var section = configuration.GetSection(key);
+
+        return services.TryAddKafkaFactories(section);
+    }
 
     public static IServiceCollection TryAddKafkaFactories(this IServiceCollection services, IConfigurationSection section)
-        => services.TryAddKafkaFactories(section.Get<KafkaSettings>());
-
-    public static IServiceCollection TryAddKafkaFactories(this IServiceCollection services, IEnumerable<IConfigurationSection> sections)
-        => (from section in sections
-            select section.Get<KafkaSettings>()
-            into settings
-            where settings != null && (settings.Consumers != null || settings.Producers != null)
-            select services.TryAddKafkaFactories(settings)).FirstOrDefault();
+        => services
+            .Configure<KafkaSettings>(section, o => o.BindNonPublicProperties = true)
+            .TryAddKafkaFactories(section.Get<KafkaSettings>());
 }
