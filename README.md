@@ -5,17 +5,17 @@ An extension of [Confluent's .NET Client for Apache Kafka<sup>TM</sup>](https://
 
 * Package Manager
 ```
-Install-Package Confluent.Kafka.FactoryExtensions -Version 7.0.x
+Install-Package Confluent.Kafka.FactoryExtensions -Version 8.x.x
 ```
 
 * .NET CLI
 ```
-dotnet add package Confluent.Kafka.FactoryExtensions --version 7.0.x
+dotnet add package Confluent.Kafka.FactoryExtensions --version 8.x.x
 ```
 
 * PackageReference
 ```
-<PackageReference Include="Confluent.Kafka.FactoryExtensions" Version="7.0.x" />
+<PackageReference Include="Confluent.Kafka.FactoryExtensions" Version="8.x.x" />
 ```
 
 ### Features
@@ -91,7 +91,6 @@ and register the client factories in DI with `services.TryAddKafkaFactories(conf
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var configuration = hostContext.Configuration.GetSection(nameof(Kafka));
                     services.TryAddKafkaFactories(configuration);
 
                     services.AddHostedService<Constellation>();

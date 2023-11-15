@@ -16,6 +16,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using Confluent.Kafka.FactoryExtensions.Models.Settings.Clients;
 
@@ -23,7 +24,10 @@ namespace Confluent.Kafka.FactoryExtensions.Models;
 
 public sealed class KafkaSettings
 {
-    public const string Key = "Kafka";
+    private const string OldValue = "Settings";
+    public static string Key { get; } = nameof(KafkaSettings)
+        .Replace(OldValue, "", StringComparison.CurrentCultureIgnoreCase);
+
     public Dictionary<string, ConsumerSettings> Consumers { get; set; }
     public Dictionary<string, ProducerSettings> Producers { get; set; }
 }
