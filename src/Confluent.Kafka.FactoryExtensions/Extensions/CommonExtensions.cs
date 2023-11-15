@@ -16,6 +16,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using Confluent.Kafka.FactoryExtensions.Factories;
 using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
@@ -27,6 +28,14 @@ namespace Confluent.Kafka.FactoryExtensions.Extensions;
 
 internal static class CommonExtensions
 {
+    public static void AddConsumerFactory<TService>(
+        this IServiceCollection services,
+        Func<IServiceProvider, TService> implementationFactory)
+        where TService : class
+    {
+        services.TryAdd(ServiceDescriptor.Singleton<TService>(implementationFactory));
+    }
+
     public static void AddConsumerFactory(this IServiceCollection services, Dictionary<string, ConsumerSettings> collection)
     {
         if (collection == null)
