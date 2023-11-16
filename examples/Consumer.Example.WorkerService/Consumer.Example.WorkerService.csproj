@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
         <UserSecretsId>dotnet-WorkerService-1D988FD2-20CA-48FB-87D0-589B71893C84</UserSecretsId>
         <IsPackable>false</IsPackable>
         <!-- Exclude the project from analysis -->

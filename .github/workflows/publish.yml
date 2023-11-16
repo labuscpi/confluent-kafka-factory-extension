@@ -18,12 +18,13 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: |
-            6.0.x
-            7.0.x
+            8.0.x
       - name: Restore
         run: dotnet restore confluent-kafka-factory-extension.sln --verbosity minimal --force
       - name: Build
         run: dotnet build confluent-kafka-factory-extension.sln --configuration Release --no-restore --verbosity minimal
+      - name: Test
+        run: dotnet test confluent-kafka-factory-extension.sln --configuration Release --no-build --verbosity minimal
       - name: Pack
         run: dotnet pack Confluent.Kafka.FactoryExtensions.csproj --configuration Release --no-build --verbosity minimal /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/releases/tag/${{ github.event.release.tag_name }}"
         working-directory: src/Confluent.Kafka.FactoryExtensions

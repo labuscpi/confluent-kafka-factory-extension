@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
         <UserSecretsId>dotnet-Service.HttpClient-3A6F9063-E2E1-404B-8360-081C7B2A903E</UserSecretsId>
         <!-- Exclude the project from analysis -->
         <SonarQubeExclude>true</SonarQubeExclude>
