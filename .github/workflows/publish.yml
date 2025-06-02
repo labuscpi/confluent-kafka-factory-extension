@@ -21,12 +21,15 @@ jobs:
             9.0.x
       - name: Restore
         run: dotnet restore confluent-kafka-factory-extension.sln --verbosity minimal --force
+        working-directory: solution
       - name: Build
         run: dotnet build confluent-kafka-factory-extension.sln --configuration Release --no-restore --verbosity minimal
+        working-directory: solution
       - name: Test
         run: dotnet test confluent-kafka-factory-extension.sln --configuration Release --no-build --verbosity minimal
+        working-directory: solution
       - name: Pack
         run: dotnet pack Confluent.Kafka.FactoryExtensions.csproj --configuration Release --no-build --verbosity minimal /p:PackageVersion=${{ github.event.release.tag_name }} /p:PackageReleaseNotes="See https://github.com/labuscpi/confluent-kafka-factory-extension/releases/tag/${{ github.event.release.tag_name }}"
-        working-directory: src/Confluent.Kafka.FactoryExtensions
+        working-directory: solution/src/Confluent.Kafka.FactoryExtensions
       - name: Publish Package to nuget.org
         run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGETAPIKEY }} --source https://api.nuget.org/v3/index.json --no-symbols --skip-duplicate

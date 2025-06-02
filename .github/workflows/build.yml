@@ -2,9 +2,9 @@ name: Build & Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dotnet-sts, dotnet-lts ]
   pull_request:
-    branches: [ main ]
+    branches: [ dotnet-sts, dotnet-lts ]
 
 jobs:
   build:
@@ -23,7 +23,10 @@ jobs:
             9.0.x
       - name: Restore
         run: dotnet restore confluent-kafka-factory-extension.sln --verbosity minimal --force
+        working-directory: solution
       - name: Build
         run: dotnet build confluent-kafka-factory-extension.sln --configuration Release --no-restore --verbosity minimal
+        working-directory: solution
       - name: Test
         run: dotnet test confluent-kafka-factory-extension.sln --configuration Release --no-build --verbosity minimal
+        working-directory: solution

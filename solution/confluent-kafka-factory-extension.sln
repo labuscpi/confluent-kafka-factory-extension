@@ -23,14 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryExtension.Example.Ut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FactoryExtension.Example.Common", "examples\.lib\FactoryExtension.Example.Common\FactoryExtension.Example.Common.csproj", "{43BD6310-472F-40AD-AEAB-7A2455590BFF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{781C3B05-6DFC-474A-8668-0E4D915F92E3}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9C362D6B-54FA-4862-A88C-84CF2A923CF7}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\build.yml = .github\workflows\build.yml
-	.github\workflows\publish.yml = .github\workflows\publish.yml
-EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Confluent.Kafka.FactoryExtensions", "src\Confluent.Kafka.FactoryExtensions\Confluent.Kafka.FactoryExtensions.csproj", "{1CAC03C3-CFA4-42BA-B918-E9995FA1C838}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Producer.Example.Api", "examples\Producer.Example.Api\Producer.Example.Api.csproj", "{9F6262F0-B8A2-4594-BCF2-451E6B754CF7}"
@@ -85,7 +77,6 @@ Global
 		{26BEBF9F-F973-4793-AA02-5EA60EAD9D2C} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
 		{7122369B-77EA-443F-9581-EDF1B59354F4} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
 		{43BD6310-472F-40AD-AEAB-7A2455590BFF} = {9EEEDF69-29F1-41C5-9BA5-712EA9E5B6E3}
-		{9C362D6B-54FA-4862-A88C-84CF2A923CF7} = {781C3B05-6DFC-474A-8668-0E4D915F92E3}
 		{1CAC03C3-CFA4-42BA-B918-E9995FA1C838} = {E754EBFF-C94E-4573-917E-C0E91EDDB3E7}
 		{9F6262F0-B8A2-4594-BCF2-451E6B754CF7} = {F9691896-F4F8-45FB-8F7A-A8199E782D93}
 	EndGlobalSection
