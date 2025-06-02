@@ -1,21 +1,23 @@
 # Confluent Kafka Extension: Client Factory
 An extension of [Confluent's .NET Client for Apache Kafka<sup>TM</sup>](https://github.com/confluentinc/confluent-kafka-dotnet).
 
+## [.NET and .NET Core release lifecycle](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core#lifecycle)
+
 ## Installation
 
 * Package Manager
 ```
-Install-Package Confluent.Kafka.FactoryExtensions -Version 8.x.x
+Install-Package Confluent.Kafka.FactoryExtensions -Version 9.x.x
 ```
 
 * .NET CLI
 ```
-dotnet add package Confluent.Kafka.FactoryExtensions --version 8.x.x
+dotnet add package Confluent.Kafka.FactoryExtensions --version 9.x.x
 ```
 
 * PackageReference
 ```
-<PackageReference Include="Confluent.Kafka.FactoryExtensions" Version="8.x.x" />
+<PackageReference Include="Confluent.Kafka.FactoryExtensions" Version="9.x.x" />
 ```
 
 ### Features
@@ -25,7 +27,7 @@ dotnet add package Confluent.Kafka.FactoryExtensions --version 8.x.x
 
 ## Usage
 
-Take a look in the [examples](examples) directory for example usage.
+Take a look in the [examples](solution/examples) directory for example usage.
 
 ```json
 {

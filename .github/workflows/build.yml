@@ -3,8 +3,12 @@ name: Build & Test
 on:
   push:
     branches: [ dotnet-sts, dotnet-lts ]
+    paths:
+        - 'solution/**'
   pull_request:
     branches: [ dotnet-sts, dotnet-lts ]
+    paths:
+      - 'solution/**'
 
 jobs:
   build:
