@@ -3,9 +3,9 @@
     <PropertyGroup>
         <PackageId>Confluent.Kafka.FactoryExtensions</PackageId>
         <Authors>labuscpi</Authors>
+        <ProjectUrl>https://github.com/labuscpi/confluent-kafka-factory-extension</ProjectUrl>
         <PackageDescription>Confluent Kafka Client Factory Extension</PackageDescription>
         <RepositoryUrl>https://github.com/labuscpi/confluent-kafka-factory-extension</RepositoryUrl>
-        <PackageProjectUrl>https://github.com/users/labuscpi/projects/1</PackageProjectUrl>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <LangVersion>latest</LangVersion>
