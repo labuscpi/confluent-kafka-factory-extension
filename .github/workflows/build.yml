@@ -2,13 +2,19 @@ name: Build & Test
 
 on:
   push:
-    branches: [ dotnet-sts, dotnet-lts ]
-    paths:
-        - 'solution/**'
-  pull_request:
-    branches: [ dotnet-sts, dotnet-lts ]
+    branches:
+      - 'dotnet-sts'
+      - 'dotnet-lts'
     paths:
       - 'solution/**'
+      - '!solution/examples/**'
+  pull_request:
+    branches:
+      - 'dotnet-sts'
+      - 'dotnet-lts'
+    paths:
+      - 'solution/**'
+      - '!solution/examples/**'
 
 jobs:
   build:
