@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using Confluent.Kafka.FactoryExtensions.Extensions;
 using Confluent.Kafka.FactoryExtensions.Models;
+using FactoryExtension.Example.Common.Extensions;
 using FactoryExtension.Example.Utilities.Interfaces;
 using FactoryExtension.Example.Utilities.Kafka;
 using Microsoft.AspNetCore.Builder;
@@ -8,15 +10,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
+using Microsoft.OpenApi;
 
 var webBuilder = WebApplication.CreateBuilder(args);
 
 var subPath = webBuilder.Configuration.GetValue<string>("CONFIG_SUB_PATH");
-var directoryContents = webBuilder.Environment.ContentRootFileProvider.GetDirectoryContents(subPath);
-foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
-    webBuilder.Configuration.AddJsonFile(file.PhysicalPath!, true, false);
+var filePaths = webBuilder.Environment.ContentRootFileProvider
+    .GetDirectoryContents(subPath)
+    .GetJsonFilePaths();
+
+foreach (var file in filePaths)
+{
+    webBuilder.Configuration.AddJsonFile(file, true, false);
+}
 
 // Add services to the container.
 var kafkaSettings = webBuilder.Configuration.GetSection(KafkaSettings.Key);
@@ -44,9 +50,6 @@ if (app.Environment.IsDevelopment())
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Producer.Example.Api v1"));
 
-// app.UseHttpsRedirection();
-// app.UseAuthorization();
-
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();

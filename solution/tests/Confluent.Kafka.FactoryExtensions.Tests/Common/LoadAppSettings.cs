@@ -20,19 +20,18 @@ using Confluent.Kafka.FactoryExtensions.Models.Settings.Clients;
 using Confluent.Kafka.FactoryExtensions.Tests.Helpers;
 using Microsoft.Extensions.Configuration;
 
-namespace Confluent.Kafka.FactoryExtensions.Tests.Common
-{
-    public abstract class LoadAppSettings<T> where T : class
-    {
-        protected readonly KafkaSettings Settings = new();
-        protected readonly string[] Names;
+namespace Confluent.Kafka.FactoryExtensions.Tests.Common;
 
-        protected LoadAppSettings()
-        {
-            TestHelper.GetConfigurationSection().Bind(Settings);
-            Names = typeof(T) == typeof(ConsumerSettings)
-                ? Settings.Consumers.Keys.ToArray()
-                : Settings.Producers.Keys.ToArray();
-        }
+public abstract class LoadAppSettings<T> where T : class
+{
+    private readonly KafkaSettings _settings = new();
+    protected readonly string[] Names;
+
+    protected LoadAppSettings()
+    {
+        TestHelper.GetConfigurationSection().Bind(_settings);
+        Names = typeof(T) == typeof(ConsumerSettings)
+            ? _settings.Consumers.Keys.ToArray()
+            : _settings.Producers.Keys.ToArray();
     }
 }

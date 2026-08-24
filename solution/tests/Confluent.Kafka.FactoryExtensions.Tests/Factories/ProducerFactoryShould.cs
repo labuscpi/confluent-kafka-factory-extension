@@ -21,43 +21,42 @@ using Confluent.Kafka.FactoryExtensions.Models.Settings.Clients;
 using Confluent.Kafka.FactoryExtensions.Tests.Factories.Common;
 using NUnit.Framework;
 
-namespace Confluent.Kafka.FactoryExtensions.Tests.Factories
+namespace Confluent.Kafka.FactoryExtensions.Tests.Factories;
+
+[TestFixture]
+public class ProducerFactoryShould : FactoryBase<ProducerSettings>
 {
-    [TestFixture]
-    public class ProducerFactoryShould : FactoryBase<ProducerSettings>
+    private ProducerFactory _sut;
+
+    [SetUp]
+    public void Setup()
+        => _sut = new ProducerFactory(Monitor);
+
+    [Test]
+    [TestCase(" ")]
+    [TestCase("")]
+    [TestCase(null)]
+    public void NameIsNullOrWhiteSpace_ThrowArgumentNullException(string name)
+        => Assert.That(() => _sut.Create<string, string>(name), Throws.InstanceOf<ArgumentNullException>()
+            .With.Property("ParamName").EqualTo("name"));
+
+    [Test]
+    public void CreatHandle_WithValidName_ReturnsInstanceOfProducerHandle()
     {
-        private ProducerFactory _sut;
+        var handle = _sut.Create<string, string>(Names[0]);
+        Assert.That(handle, Is.InstanceOf<IProducerHandle<string, string>>());
+    }
 
-        [SetUp]
-        public void Setup()
-            => _sut = new ProducerFactory(Monitor);
-
-        [Test]
-        [TestCase(" ")]
-        [TestCase("")]
-        [TestCase(null)]
-        public void NameIsNullOrWhiteSpace_ThrowArgumentNullException(string name)
-            => Assert.That(() => _sut.Create<string, string>(name), Throws.InstanceOf<ArgumentNullException>()
-                .With.Property("ParamName").EqualTo("name"));
-
-        [Test]
-        public void CreatHandle_WithValidName_ReturnsInstanceOfProducerHandle()
-        {
-            var handle = _sut.Create<string, string>(Names[0]);
-            Assert.That(handle, Is.InstanceOf<IProducerHandle<string, string>>());
-        }
-
-        [Test]
-        public void CreatHandle_InvalidName_ThrowsArgumentNullException()
-            => Assert.That(() => _sut.Create<string, string>("random"), Throws.TypeOf<ArgumentNullException>());
+    [Test]
+    public void CreatHandle_InvalidName_ThrowsArgumentNullException()
+        => Assert.That(() => _sut.Create<string, string>("random"), Throws.TypeOf<ArgumentNullException>());
 
 
-        [Test]
-        public void ConsecutiveCreateCalls_WithDifferentName_CreateDifferentHandle()
-        {
-            var handleX = _sut.Create<string, string>(Names[0]);
-            var handleY = _sut.Create<string, string>(Names[0]);
-            Assert.That(handleX, Is.SameAs(handleY));
-        }
+    [Test]
+    public void ConsecutiveCreateCalls_WithDifferentName_CreateDifferentHandle()
+    {
+        var handleX = _sut.Create<string, string>(Names[0]);
+        var handleY = _sut.Create<string, string>(Names[0]);
+        Assert.That(handleX, Is.SameAs(handleY));
     }
 }

@@ -16,38 +16,40 @@
 
 #endregion
 
-using System.Linq;
 using Confluent.Kafka.FactoryExtensions.Extensions;
 using Confluent.Kafka.FactoryExtensions.Models;
 using Consumer.Example.WorkerService.Consumers;
+using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Consumer.Example.WorkerService
+namespace Consumer.Example.WorkerService;
+
+public static class Program
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-            => CreateHostBuilder(args).Build().Run();
+    public static void Main(string[] args)
+        => CreateHostBuilder(args).Build().Run();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, builder) =>
-                {
-                    var configuration = builder.Build();
-                    var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
-                    var directoryContents = context.HostingEnvironment.ContentRootFileProvider.GetDirectoryContents(configSubPath);
-                    foreach (var file in directoryContents.Where(x => x.Name.EndsWith(".json")))
-                        builder.AddJsonFile(file.PhysicalPath!, true, false);
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    var configuration = hostContext.Configuration.GetSection(KafkaSettings.Key);
-                    services.TryAddKafkaFactories(configuration);
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((context, builder) =>
+            {
+                var configuration = builder.Build();
+                var configSubPath = configuration.GetValue<string>("CONFIG_SUB_PATH");
+                var filePaths = context.HostingEnvironment.ContentRootFileProvider
+                    .GetDirectoryContents(configSubPath)
+                    .GetJsonFilePaths();
 
-                    // services.AddHostedService<ExampleOne>();
-                    services.AddHostedService<ExampleTwo<long, string>>();
-                });
-    }
+                foreach (var file in filePaths)
+                    builder.AddJsonFile(file, true, false);
+            })
+            .ConfigureServices((hostContext, services) =>
+            {
+                var configuration = hostContext.Configuration.GetSection(KafkaSettings.Key);
+                services.TryAddKafkaFactories(configuration);
+
+                // services.AddHostedService<ExampleOne>();
+                services.AddHostedService<ExampleTwo<long, string>>();
+            });
 }

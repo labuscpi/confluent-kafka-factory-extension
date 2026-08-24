@@ -25,47 +25,46 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
-namespace Confluent.Kafka.FactoryExtensions.Tests.Extensions
+namespace Confluent.Kafka.FactoryExtensions.Tests.Extensions;
+
+[TestFixture]
+public class ServiceCollectionShould
 {
-    [TestFixture]
-    public class ServiceCollectionShould
+    [Test]
+    public void TryAddKafkaFactories_WithNUllKafkaSettings_ArgumentNullException()
     {
-        [Test]
-        public void TryAddKafkaFactories_WithNUllKafkaSettings_ArgumentNullException()
-        {
-            Assert.That(
-                () =>
-                {
-                    new ServiceCollection().TryAddKafkaFactories(TestHelper.GetIConfigurationRoot()
-                        .GetSection("Undefined"));
-                }, Throws.InstanceOf<ArgumentNullException>().With.Property("ParamName").EqualTo("settings"));
-        }
+        Assert.That(
+            () =>
+            {
+                new ServiceCollection().TryAddKafkaFactories(TestHelper.GetIConfigurationRoot()
+                    .GetSection("Undefined"));
+            }, Throws.InstanceOf<ArgumentNullException>().With.Property("ParamName").EqualTo("settings"));
+    }
 
-        [Test]
-        public void TryAddKafkaFactories_WithConfiguration()
-        {
-            var configuration = TestHelper.GetIConfigurationRoot();
-            var services = new ServiceCollection().TryAddKafkaFactories(configuration);
+    [Test]
+    public void TryAddKafkaFactories_WithConfiguration()
+    {
+        var configuration = TestHelper.GetIConfigurationRoot();
+        var services = new ServiceCollection().TryAddKafkaFactories(configuration);
 
-            ValidateRequiredService(services);
-        }
+        ValidateRequiredService(services);
+    }
 
-        [Test]
-        public void TryAddKafkaFactories_WithConfigurationSection()
-        {
-            var configuration = TestHelper.GetIConfigurationRoot().GetSection(KafkaSettings.Key);
-            var services = new ServiceCollection().TryAddKafkaFactories(configuration);
+    [Test]
+    public void TryAddKafkaFactories_WithConfigurationSection()
+    {
+        var configuration = TestHelper.GetIConfigurationRoot().GetSection(KafkaSettings.Key);
+        var services = new ServiceCollection().TryAddKafkaFactories(configuration);
 
-            ValidateRequiredService(services);
-        }
+        ValidateRequiredService(services);
+    }
 
-        private static void ValidateRequiredService(IServiceCollection services)
-        {
-            var sp = services.BuildServiceProvider();
-            Assert.That(sp.GetRequiredService<IOptions<KafkaSettings>>().Value, Is.InstanceOf<KafkaSettings>());
-            Assert.That(sp.GetRequiredService<KafkaSettings>(), Is.InstanceOf<KafkaSettings>());
-            Assert.That(sp.GetRequiredService<IConsumerFactory>(), Is.InstanceOf<IConsumerFactory>());
-            Assert.That(sp.GetRequiredService<IProducerFactory>(), Is.InstanceOf<IProducerFactory>());
-        }
+    private static void ValidateRequiredService(IServiceCollection services)
+    {
+        var sp = services.BuildServiceProvider();
+        Assert.That(sp.GetRequiredService<IOptions<KafkaSettings>>().Value, Is.InstanceOf<KafkaSettings>());
+        Assert.That(sp.GetRequiredService<KafkaSettings>(), Is.InstanceOf<KafkaSettings>());
+        Assert.That(sp.GetRequiredService<IConsumerFactory>(), Is.InstanceOf<IConsumerFactory>());
+        Assert.That(sp.GetRequiredService<IProducerFactory>(), Is.InstanceOf<IProducerFactory>());
     }
 }

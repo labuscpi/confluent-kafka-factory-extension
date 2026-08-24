@@ -39,8 +39,7 @@ internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHand
 
     public ConsumerHandle(ConsumerSettings settings)
     {
-        if (settings == null)
-            throw new ArgumentNullException(nameof(settings));
+        ArgumentNullException.ThrowIfNull(settings);
 
         Topic = settings.Topic;
         Separator = settings.Separator;
@@ -97,7 +96,7 @@ internal sealed class ConsumerHandle<TKey, TValue> : ClientHandle, IConsumerHand
                 .Distinct(_stringComparer)
                 .ToList();
 
-        if (topics == null || !topics.Any())
+        if (topics == null || topics.Count == 0)
             throw new ArgumentNullException(nameof(Topic));
 
         topics.Sort(_stringComparer);

@@ -15,23 +15,22 @@
 using System;
 using System.Text;
 
-namespace FactoryExtension.Example.Common.Extensions
+namespace FactoryExtension.Example.Common.Extensions;
+
+public static class ExceptionExtensions
 {
-    public static class ExceptionExtensions
+
+    public static string GetMessage(this Exception ex)
     {
+        var e = ex;
 
-        public static string GetMessage(this Exception ex)
+        var sb = new StringBuilder(e.Message);
+        while (e.InnerException != null)
         {
-            var e = ex;
-
-            var sb = new StringBuilder(e.Message);
-            while (e.InnerException != null)
-            {
-                e = e.InnerException;
-                sb.Append("::").Append(e.Message);
-            }
-
-            return sb.ToString();
+            e = e.InnerException;
+            sb.Append("::").Append(e.Message);
         }
+
+        return sb.ToString();
     }
 }

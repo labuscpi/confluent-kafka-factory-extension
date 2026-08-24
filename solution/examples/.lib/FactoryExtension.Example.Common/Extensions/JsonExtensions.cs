@@ -18,14 +18,13 @@
 
 using Newtonsoft.Json;
 
-namespace FactoryExtension.Example.Common.Extensions
-{
-    public static class JsonExtensions
-    {
-        public static string SerializeObject(this object value, Formatting formatting = Formatting.None)
-            => JsonConvert.SerializeObject(value, formatting);
+namespace FactoryExtension.Example.Common.Extensions;
 
-        public static T DeserializeObject<T>(this string value)
-            => JsonConvert.DeserializeObject<T>(value);
-    }
+public static class JsonExtensions
+{
+    public static string SerializeObject(this object value, Formatting formatting = Formatting.None)
+        => JsonConvert.SerializeObject(value, formatting);
+
+    public static T DeserializeObject<T>(this string value)
+        => JsonConvert.DeserializeObject<T>(value);
 }

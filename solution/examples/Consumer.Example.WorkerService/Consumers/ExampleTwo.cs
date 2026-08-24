@@ -24,55 +24,49 @@ using Consumer.Example.WorkerService.Consumers.Common;
 using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace Consumer.Example.WorkerService.Consumers
+namespace Consumer.Example.WorkerService.Consumers;
+
+public class ExampleTwo<TKey, TValue>(IConsumerFactory factory, ILogger<ExampleTwo<TKey, TValue>> logger)
+    : ProjectBackgroundService<TKey, TValue>(factory,
+        "Constellation", logger)
 {
-    public class ExampleTwo<TKey, TValue> : ProjectBackgroundService<TKey, TValue>
+    protected override void StartConsumerLoop(CancellationToken cancellationToken)
     {
-        private readonly ILogger<ExampleTwo<TKey, TValue>> _logger;
+        using var consumer = Handle.Builder.Build();
 
-        public ExampleTwo(IConsumerFactory factory, ILogger<ExampleTwo<TKey, TValue>> logger) : base(factory, "Constellation", logger)
-        {
-            _logger = logger;
-        }
+        consumer.Subscribe(Handle.CreateTopics());
 
-        protected override void StartConsumerLoop(CancellationToken cancellationToken)
-        {
-            using var consumer = Handle.Builder.Build();
-
-            consumer.Subscribe(Handle.CreateTopics());
-
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-                    var cr = consumer.Consume(cancellationToken);
-
-                    HandleMessage(cr.Message);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (Exception e)
-                {
-                    LogException(e);
-                }
-            }
-        }
-
-        private void HandleMessage(Message<TKey, TValue> message)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                if (message.Value is string)
-                    _logger.LogInformation("{Key}: {Value}", message.Key, message.Value);
-                else
-                    _logger.LogInformation("{Key}: {Value}", message.Key, message.Value.SerializeObject());
+                var cr = consumer.Consume(cancellationToken);
+
+                HandleMessage(cr.Message);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
             }
             catch (Exception e)
             {
                 LogException(e);
             }
+        }
+    }
+
+    private void HandleMessage(Message<TKey, TValue> message)
+    {
+        try
+        {
+            if (message.Value is string)
+                logger.LogInformation("{Key}: {Value}", message.Key, message.Value);
+            else
+                logger.LogInformation("{Key}: {Value}", message.Key, message.Value.SerializeObject());
+        }
+        catch (Exception e)
+        {
+            LogException(e);
         }
     }
 }

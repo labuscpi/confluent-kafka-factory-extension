@@ -15,11 +15,10 @@
 using System.Threading.Tasks;
 using Confluent.Kafka;
 
-namespace FactoryExtension.Example.Utilities.Interfaces
+namespace FactoryExtension.Example.Utilities.Interfaces;
+
+public interface IProduceHelper<TKey, TValue>
 {
-    public interface IProduceHelper<TKey, TValue>
-    {
-        Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value);
-        Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value);
-    }
+    Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value);
+    Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value);
 }

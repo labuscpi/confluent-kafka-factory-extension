@@ -35,8 +35,7 @@ internal sealed class ProducerHandle<TKey, TValue> : ClientHandle, IProducerHand
 
     public ProducerHandle(ProducerSettings settings)
     {
-        if (settings == null)
-            throw new ArgumentNullException(nameof(settings));
+        ArgumentNullException.ThrowIfNull(settings);
 
         Topic = settings.Topic;
 

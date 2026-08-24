@@ -22,57 +22,56 @@ using Confluent.Kafka.FactoryExtensions.Interfaces.Factories;
 using FactoryExtension.Example.Utilities.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace FactoryExtension.Example.Utilities.Kafka
+namespace FactoryExtension.Example.Utilities.Kafka;
+
+public class ProduceHelper<TKey, TValue> : IProduceHelper<TKey, TValue>
 {
-    public class ProduceHelper<TKey, TValue> : IProduceHelper<TKey, TValue>
+    private const string ProducerName = "Contradiction";
+
+    private readonly IProducerFactory _factory;
+    private readonly ILogger<ProduceHelper<TKey, TValue>> _logger;
+
+    public ProduceHelper(IProducerFactory factory, ILogger<ProduceHelper<TKey, TValue>> logger)
     {
-        private const string ProducerName = "Contradiction";
+        _factory = factory;
+        _logger = logger;
 
-        private readonly IProducerFactory _factory;
-        private readonly ILogger<ProduceHelper<TKey, TValue>> _logger;
-
-        public ProduceHelper(IProducerFactory factory, ILogger<ProduceHelper<TKey, TValue>> logger)
-        {
-            _factory = factory;
-            _logger = logger;
-
-            ConfigureHandle();
-        }
-
-        public Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value)
-        {
-            var message = new Message<TKey, TValue>
-            {
-                Value = value
-            };
-
-            return Produce(message);
-        }
-
-        public Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value)
-        {
-            var message = new Message<TKey, TValue>
-            {
-                Key = key,
-                Value = value
-            };
-
-            return Produce(message);
-        }
-
-        private Task<DeliveryResult<TKey, TValue>> Produce(Message<TKey, TValue> message)
-            => _factory.Create<TKey, TValue>(ProducerName).ProduceAsync(message);
-
-        private void ConfigureHandle()
-            => _factory.Create<TKey, TValue>(ProducerName)
-                .Builder
-                .SetErrorHandler((_, e) =>
-                {
-                    _logger.LogDebug("[{Producer}::Error Handler::{Reason}]", ProducerName, e.Reason);
-                })
-                .SetLogHandler((_, m) =>
-                {
-                    _logger.LogDebug("[{Producer}::Log Handler::{Message}]", ProducerName, m.Message);
-                });
+        ConfigureHandle();
     }
+
+    public Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TValue value)
+    {
+        var message = new Message<TKey, TValue>
+        {
+            Value = value
+        };
+
+        return Produce(message);
+    }
+
+    public Task<DeliveryResult<TKey, TValue>> SendMessageAsync(TKey key, TValue value)
+    {
+        var message = new Message<TKey, TValue>
+        {
+            Key = key,
+            Value = value
+        };
+
+        return Produce(message);
+    }
+
+    private Task<DeliveryResult<TKey, TValue>> Produce(Message<TKey, TValue> message)
+        => _factory.Create<TKey, TValue>(ProducerName).ProduceAsync(message);
+
+    private void ConfigureHandle()
+        => _factory.Create<TKey, TValue>(ProducerName)
+            .Builder
+            .SetErrorHandler((_, e) =>
+            {
+                _logger.LogDebug("[{Producer}::Error Handler::{Reason}]", ProducerName, e.Reason);
+            })
+            .SetLogHandler((_, m) =>
+            {
+                _logger.LogDebug("[{Producer}::Log Handler::{Message}]", ProducerName, m.Message);
+            });
 }

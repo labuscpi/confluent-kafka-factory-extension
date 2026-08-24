@@ -22,6 +22,7 @@ using Confluent.Kafka.FactoryExtensions.Models.Settings.Clients;
 
 namespace Confluent.Kafka.FactoryExtensions.Models;
 
+[Serializable]
 public sealed class KafkaSettings
 {
     private const string OldValue = "Settings";

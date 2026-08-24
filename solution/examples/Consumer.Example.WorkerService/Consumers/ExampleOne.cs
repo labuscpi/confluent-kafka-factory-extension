@@ -24,48 +24,41 @@ using Consumer.Example.WorkerService.Consumers.Common;
 using FactoryExtension.Example.Common.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace Consumer.Example.WorkerService.Consumers
+namespace Consumer.Example.WorkerService.Consumers;
+
+public class ExampleOne(IConsumerFactory factory, ILogger<ExampleOne> logger)
+    : ProjectBackgroundService<long, string>(factory, "Constellation", logger)
 {
-    public class ExampleOne : ProjectBackgroundService<long, string>
+    protected override void StartConsumerLoop(CancellationToken cancellationToken)
     {
-        private readonly ILogger<ExampleOne> _logger;
-
-        public ExampleOne(IConsumerFactory factory, ILogger<ExampleOne> logger) : base(factory, "Constellation", logger)
-        {
-            _logger = logger;
-        }
-
-        protected override void StartConsumerLoop(CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-                    var cr = Handle.Consume(cancellationToken);
-
-                    HandleMessage(cr.Message);
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
-                catch (Exception e)
-                {
-                    LogException(e);
-                }
-            }
-        }
-
-        private void HandleMessage(Message<long, string> message)
+        while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                _logger.LogInformation("{Key}: {Value}", message.Key, message.Value ?? message.Value.SerializeObject());
+                var cr = Handle.Consume(cancellationToken);
+
+                HandleMessage(cr.Message);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
             }
             catch (Exception e)
             {
                 LogException(e);
             }
+        }
+    }
+
+    private void HandleMessage(Message<long, string> message)
+    {
+        try
+        {
+            logger.LogInformation("{Key}: {Value}", message.Key, message.Value ?? message.Value.SerializeObject());
+        }
+        catch (Exception e)
+        {
+            LogException(e);
         }
     }
 }

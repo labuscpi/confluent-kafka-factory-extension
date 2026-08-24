@@ -21,19 +21,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
-namespace Confluent.Kafka.FactoryExtensions.Tests.Factories.Common
+namespace Confluent.Kafka.FactoryExtensions.Tests.Factories.Common;
+
+public abstract class FactoryBase<T> : LoadAppSettings<T> where T : class
 {
-    public abstract class FactoryBase<T> : LoadAppSettings<T> where T : class
+    protected IOptionsMonitor<T> Monitor;
+
+    [OneTimeSetUp]
+    protected void OneTimeSetUp()
     {
-        protected IOptionsMonitor<T> Monitor;
+        var services = new ServiceCollection();
+        services.TryAddKafkaFactories(TestHelper.GetIConfigurationRoot());
 
-        [OneTimeSetUp]
-        protected void OneTimeSetUp()
-        {
-            var services = new ServiceCollection();
-            services.TryAddKafkaFactories(TestHelper.GetIConfigurationRoot());
-
-            Monitor = services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<T>>();
-        }
+        Monitor = services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<T>>();
     }
 }

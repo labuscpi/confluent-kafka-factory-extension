@@ -17,9 +17,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Confluent.Kafka.FactoryExtensions.Factories;
 using Confluent.Kafka.FactoryExtensions.Models;
 using Confluent.Kafka.FactoryExtensions.Validators;
 using FluentValidation;

@@ -19,34 +19,33 @@ using Confluent.Kafka.FactoryExtensions.Models;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
-namespace Confluent.Kafka.FactoryExtensions.Tests.Helpers
+namespace Confluent.Kafka.FactoryExtensions.Tests.Helpers;
+
+internal static class TestHelper
 {
-    internal static class TestHelper
+    private static readonly string OutputPath = TestContext.CurrentContext.TestDirectory;
+
+    public static IConfiguration GetIConfigurationRoot(string outputDirectory = null)
+        => new ConfigurationBuilder()
+            .SetBasePath(GetBasePath(outputDirectory))
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+            .AddEnvironmentVariables()
+            .Build();
+
+    public static IConfigurationSection GetConfigurationSection(string key = null, string outputDirectory = null)
     {
-        private static readonly string OutputPath = TestContext.CurrentContext.TestDirectory;
+        key ??= KafkaSettings.Key;
 
-        public static IConfiguration GetIConfigurationRoot(string outputDirectory = null)
-            => new ConfigurationBuilder()
-                .SetBasePath(GetBasePath(outputDirectory))
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                .AddEnvironmentVariables()
-                .Build();
-
-        public static IConfigurationSection GetConfigurationSection(string key = null, string outputDirectory = null)
-        {
-            key ??= KafkaSettings.Key;
-
-            return GetIConfigurationRoot(outputDirectory).GetSection(key);
-        }
-
-        // public static KafkaSettings GetKafkaSettings(string outputDirectory = null)
-        // {
-        //     var settings = new KafkaSettings();
-        //     GetConfigurationSection(outputDirectory: outputDirectory).Bind(settings);
-        //     return settings;
-        // }
-
-        private static string GetBasePath(string outputDirectory)
-            => string.IsNullOrWhiteSpace(outputDirectory) ? OutputPath : Path.Join(OutputPath, outputDirectory);
+        return GetIConfigurationRoot(outputDirectory).GetSection(key);
     }
+
+    // public static KafkaSettings GetKafkaSettings(string outputDirectory = null)
+    // {
+    //     var settings = new KafkaSettings();
+    //     GetConfigurationSection(outputDirectory: outputDirectory).Bind(settings);
+    //     return settings;
+    // }
+
+    private static string GetBasePath(string outputDirectory)
+        => string.IsNullOrWhiteSpace(outputDirectory) ? OutputPath : Path.Join(OutputPath, outputDirectory);
 }

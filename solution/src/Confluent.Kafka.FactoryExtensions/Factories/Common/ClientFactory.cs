@@ -27,15 +27,11 @@ using Microsoft.Extensions.Options;
 
 namespace Confluent.Kafka.FactoryExtensions.Factories.Common;
 
-public abstract class ClientFactory<TSettings>
+public abstract class ClientFactory<TSettings>(IOptionsMonitor<TSettings> optionsMonitor)
 {
     private const string Separator = "::";
 
     private string _keyPrefix;
-    private readonly IOptionsMonitor<TSettings> _optionsMonitor;
-
-    protected ClientFactory(IOptionsMonitor<TSettings> optionsMonitor)
-        => _optionsMonitor = optionsMonitor;
 
     protected Func<string, Lazy<ClientHandle>> HandleFactory<TKey, TValue>()
         => name => new Lazy<ClientHandle>(() => CreateHandle<TKey, TValue>(name), LazyThreadSafetyMode.ExecutionAndPublication);
@@ -58,7 +54,7 @@ public abstract class ClientFactory<TSettings>
     [ExcludeFromCodeCoverage]
     protected TSettings GetSettings(string name)
     {
-        var settings = _optionsMonitor.Get(name.Replace(_keyPrefix, "", StringComparison.OrdinalIgnoreCase));
+        var settings = optionsMonitor.Get(name.Replace(_keyPrefix, "", StringComparison.OrdinalIgnoreCase));
         return settings switch
         {
             ConsumerSettings consumerSettings => new ConsumerSettingsValidator().Validate(consumerSettings).IsValid ? settings : default,

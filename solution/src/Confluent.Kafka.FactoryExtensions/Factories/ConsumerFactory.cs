@@ -28,12 +28,9 @@ using Microsoft.Extensions.Options;
 
 namespace Confluent.Kafka.FactoryExtensions.Factories;
 
-public sealed class ConsumerFactory : ClientFactory<ConsumerSettings>, IConsumerFactory
+public sealed class ConsumerFactory(IOptionsMonitor<ConsumerSettings> optionsMonitor)
+    : ClientFactory<ConsumerSettings>(optionsMonitor), IConsumerFactory
 {
-    public ConsumerFactory(IOptionsMonitor<ConsumerSettings> optionsMonitor) : base(optionsMonitor)
-    {
-    }
-
     public IConsumerHandle<TKey, TValue> Create<TKey, TValue>(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

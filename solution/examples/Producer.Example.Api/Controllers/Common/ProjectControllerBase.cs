@@ -18,7 +18,7 @@ namespace Producer.Example.Api.Controllers.Common;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProjectControllerBase
+public abstract class ProjectControllerBase
 {
 
 }

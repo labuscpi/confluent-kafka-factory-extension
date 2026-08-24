@@ -11,17 +11,11 @@ using Producer.Example.Api.Controllers.Common;
 
 namespace Producer.Example.Api.Controllers;
 
-public class WeatherForecastController : ProjectControllerBase
+public class WeatherForecastController(
+    IProduceHelper<long, string> produceHelper,
+    ILogger<WeatherForecastController> logger)
+    : ProjectControllerBase
 {
-    private readonly IProduceHelper<long, string> _produceHelper;
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public WeatherForecastController(IProduceHelper<long, string> produceHelper, ILogger<WeatherForecastController> logger)
-    {
-        _produceHelper = produceHelper;
-        _logger = logger;
-    }
-
     [HttpGet]
     public async Task<ActionResult> GetWeatherForecastAsync()
     {
@@ -29,13 +23,13 @@ public class WeatherForecastController : ProjectControllerBase
         {
             var key = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var value = GetWeatherForecast().SerializeObject();
-            var result = await _produceHelper.SendMessageAsync(key, value);
+            var result = await produceHelper.SendMessageAsync(key, value);
 
             return new ObjectResult(result);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "[Unexpected error::{Message}]", e.GetMessage());
+            logger.LogError(e, "[Unexpected error::{Message}]", e.GetMessage());
 
             return new BadRequestObjectResult(new
             {
@@ -49,14 +43,16 @@ public class WeatherForecastController : ProjectControllerBase
     {
         var rng = new Random();
 
-        return Enumerable
-            .Range(1, 5)
-            .Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = WeatherForecast.Summaries[rng.Next(WeatherForecast.Summaries.Length)]
-            })
-            .ToList();
+        return
+        [
+            .. Enumerable
+                .Range(1, 5)
+                .Select(index => new WeatherForecast
+                {
+                    Date = DateTime.Now.AddDays(index),
+                    TemperatureC = rng.Next(-20, 55),
+                    Summary = WeatherForecast.Summaries[rng.Next(WeatherForecast.Summaries.Length)]
+                })
+        ];
     }
 }
